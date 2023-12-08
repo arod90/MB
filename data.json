@@ -1,0 +1,40 @@
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "ci": "1714540652",
+  "nombre": "Aaron S",
+  "apellido": "Salazar",
+  "fechaNacimiento": "2023-12-07T09:57:32.449Z",
+  "genero": "M",
+  "lugarNacimiento": "Cuenca",
+  "ingresos": [
+    {
+      "cantidad_3_meses": 20,
+      "facturacion_total": 300,
+      "items_pref": {
+        "negroni": 15,
+        "bot_ant": 3
+      }
+    }
+  ]
+}
+
+{
+  "edades": {
+      "18-21": 10,
+      "22-27": 2,
+      "27+": 40 
+  },
+  "estado_civil": {
+      "casado": 30,
+      "soltero": 20,
+      "div": 2,
+      "extra"
+  },
+  "genero": {
+      "masculino": 2,
+      "femenino": 20
+  }
+  "facturacion_dia": {
+      "total": 1000
+  }
+}

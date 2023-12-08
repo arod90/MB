@@ -25,3 +25,7 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+section {
+  height: calc(90vh - 64px);
+}
