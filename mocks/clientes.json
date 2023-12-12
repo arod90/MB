@@ -1,0 +1,199 @@
+[
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "ci": "1714540652",
+    "nombre": "Aaron",
+    "apellido": "Salazar",
+    "fechaNacimiento": "1990-12-12T09:57:32.449Z",
+    "genero": "M",
+    "lugarNacimiento": "Cuenca",
+    "horaIngreso": "08:01:00",
+    "ingresos": {
+      "num_ingresos": 20,
+      "facturacion_total": 300,
+      "items_pref": {
+        "negroni": 15,
+        "bot_ant": 3,
+        "Ribeye": 1,
+        "Tataki_atun": 4,
+        "docena_ostras": 14,
+        "Pizza_burr": 4
+      }
+    }
+  },
+
+  {
+    "id": "5fa85f64-5717-4562-b3fc-2c963f66afa8",
+    "ci": "1714540654",
+    "nombre": "Carlos",
+    "apellido": "Torres",
+    "fechaNacimiento": "1962-10-05T07:55:30.447Z",
+    "genero": "M",
+    "lugarNacimiento": "Guayaquil",
+    "horaIngreso": "08:10:00",
+    "ingresos": {
+      "num_ingresos": 0,
+      "facturacion_total": 0,
+      "items_pref": {}
+    }
+  },
+  {
+    "id": "6fa85f64-5717-4562-b3fc-2c963f66afa9",
+    "ci": "1714540655",
+    "nombre": "Diana",
+    "apellido": "Perez",
+    "fechaNacimiento": "1997-09-04T06:54:29.446Z",
+    "genero": "F",
+    "lugarNacimiento": "Loja",
+    "horaIngreso": "08:15:00",
+    "ingresos": {
+      "num_ingresos": 5,
+      "facturacion_total": 615.78,
+      "items_pref": {
+        "mojito": 25,
+        "bot_ant": 9
+      }
+    }
+  },
+  {
+    "id": "7fa85f64-5717-4562-b3fc-2c963f66afa10",
+    "ci": "1714540656",
+    "nombre": "Eduardo",
+    "apellido": "Rodriguez",
+    "fechaNacimiento": "1987-08-03T05:53:28.445Z",
+    "genero": "M",
+    "lugarNacimiento": "Manta",
+    "horaIngreso": "08:15:00",
+    "ingresos": {
+      "num_ingresos": 60,
+      "facturacion_total": 719.2,
+      "items_pref": {
+        "old_fashioned": 30,
+        "bot_ant": 11
+      }
+    }
+  },
+  {
+    "id": "8fa85f64-5717-4562-b3fc-2c963f66afa11",
+    "ci": "1714540657",
+    "nombre": "Fernanda",
+    "apellido": "Gomez",
+    "fechaNacimiento": "2000-07-02T04:52:27.444Z",
+    "genero": "F",
+    "lugarNacimiento": "Ambato",
+    "horaIngreso": "08:15:00",
+    "ingresos": {
+      "num_ingresos": 17,
+      "facturacion_total": 1800.46,
+      "items_pref": {
+        "gin_tonic": 35,
+        "bot_ant": 13
+      }
+    }
+  },
+  {
+    "id": "9fa85f64-5717-4562-b3fc-2c963f66afa12",
+    "ci": "1714540658",
+    "nombre": "Gabriel",
+    "apellido": "Hernandez",
+    "fechaNacimiento": "1992-06-01T03:51:26.443Z",
+    "genero": "M",
+    "lugarNacimiento": "Riobamba",
+    "horaIngreso": "08:15:00",
+    "ingresos": {
+      "num_ingresos": 8,
+      "facturacion_total": 900,
+      "items_pref": {
+        "whiskey_sour": 40,
+        "bot_ant": 15
+      }
+    }
+  },
+  {
+    "id": "10fa85f64-5717-4562-b3fc-2c963f66afa13",
+    "ci": "1714540659",
+    "nombre": "Isabella",
+    "apellido": "Jimenez",
+    "fechaNacimiento": "1993-05-31T02:50:25.442Z",
+    "genero": "F",
+    "lugarNacimiento": "Esmeraldas",
+    "horaIngreso": "08:20:43",
+    "ingresos": {
+      "num_ingresos": 90,
+      "facturacion_total": 12459.12,
+      "items_pref": {
+        "tequila_sunrise": 45,
+        "bot_ant": 17
+      }
+    }
+  },
+  {
+    "id": "11fa85f64-5717-4562-b3fc-2c963f66afa14",
+    "ci": "1714540660",
+    "nombre": "Javier",
+    "apellido": "Klein",
+    "fechaNacimiento": "1999-04-30T01:49:24.441Z",
+    "genero": "M",
+    "lugarNacimiento": "Machala",
+    "horaIngreso": "08:40:12",
+    "ingresos": {
+      "num_ingresos": 10,
+      "facturacion_total": 1100.23,
+      "items_pref": {
+        "bloody_mary": 50,
+        "bot_ant": 19
+      }
+    }
+  },
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa13",
+    "ci": "1714540659",
+    "nombre": "Carlos",
+    "apellido": "Perez",
+    "fechaNacimiento": "1995-05-12T04:52:27.444Z",
+    "genero": "M",
+    "lugarNacimiento": "Quito",
+    "horaIngreso": "08:30:00",
+    "ingresos": {
+      "num_ingresos": 20,
+      "facturacion_total": 2000.5,
+      "items_pref": {
+        "mojito": 30,
+        "bot_ant": 10
+      }
+    }
+  },
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa14",
+    "ci": "1714540660",
+    "nombre": "Maria",
+    "apellido": "Lopez",
+    "fechaNacimiento": "1998-04-15T03:51:26.443Z",
+    "genero": "F",
+    "lugarNacimiento": "Guayaquil",
+    "horaIngreso": "08:45:00",
+    "ingresos": {
+      "num_ingresos": 15,
+      "facturacion_total": 1500,
+      "items_pref": {
+        "margarita": 25,
+        "bot_ant": 12
+      }
+    }
+  },
+  {
+    "id": "4fa85f64-5717-4562-b3fc-2c963f66afa7",
+    "ci": "1714540653",
+    "nombre": "Brenda",
+    "apellido": "Reyes",
+    "fechaNacimiento": "1987-11-06T08:56:31.448Z",
+    "genero": "F",
+    "lugarNacimiento": "Quito",
+    "horaIngreso": "08:03:00",
+    "ingresos": {
+      "num_ingresos": 0,
+      "facturacion_total": 0,
+      "items_pref": {}
+    }
+  }
+]

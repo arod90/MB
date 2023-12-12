@@ -1,0 +1,19 @@
+{
+  "edades": {
+    "18-21": 10,
+    "22-27": 2,
+    "27+": 40
+  },
+  "estado_civil": {
+    "casado": 30,
+    "soltero": 20,
+    "div": 2
+  },
+  "genero": {
+    "masculino": 2,
+    "femenino": 20
+  },
+  "facturacion_dia": {
+    "total": 1000
+  }
+}
