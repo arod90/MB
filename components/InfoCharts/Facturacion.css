@@ -1,0 +1,15 @@
+.facturacion-cont {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 10px;
+}
+
+.facturacion-cont h1 {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #6d6d6d;
+}

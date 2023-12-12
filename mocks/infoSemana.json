@@ -1,0 +1,158 @@
+[
+  {
+    "id": "3fa85f64-5717-4532-b3fc-2c963f66afa6",
+    "fecha": "2023-12-12T09:57:32.449Z",
+    "edades": {
+      "18-21": 123,
+      "22-26": 90,
+      "27-31": 40,
+      "32-36": 20,
+      "37-41": 0,
+      "42-46": 0
+    },
+    "estado_civil": {
+      "casado": 23,
+      "soltero": 240,
+      "divoriciado": 13
+    },
+    "genero": {
+      "masculino": 123,
+      "femenino": 240
+    },
+    "facturacion_dia": {
+      "total": 15456.43
+    },
+    "promociones": {
+      "Margarita3x2": 15,
+      "LadiesNight": "SI"
+    },
+    "dj": {
+      "turno1": "Danny",
+      "turno2": "Tomas"
+    }
+  },
+  {
+    "fecha": "2023-12-13T10:00:00.000Z",
+    "edades": {
+      "18-21": 120,
+      "22-26": 95,
+      "27-31": 45,
+      "32-36": 25,
+      "37-41": 5,
+      "42-46": 2
+    },
+    "estado_civil": {
+      "casado": 25,
+      "soltero": 230,
+      "divoriciado": 15
+    },
+    "genero": {
+      "masculino": 130,
+      "femenino": 235
+    },
+    "facturacion_dia": {
+      "total": 12520.45
+    },
+    "promociones": {
+      "Margarita3x2": 20,
+      "LadiesNight": "NO"
+    },
+    "dj": {
+      "turno1": "Lucas",
+      "turno2": "Danny"
+    }
+  },
+  {
+    "fecha": "2023-12-14T11:00:00.000Z",
+    "edades": {
+      "18-21": 115,
+      "22-26": 100,
+      "27-31": 50,
+      "32-36": 30,
+      "37-41": 10,
+      "42-46": 5
+    },
+    "estado_civil": {
+      "casado": 30,
+      "soltero": 220,
+      "divoriciado": 20
+    },
+    "genero": {
+      "masculino": 140,
+      "femenino": 230
+    },
+    "facturacion_dia": {
+      "total": 13450.23
+    },
+    "promociones": {
+      "Margarita3x2": 25,
+      "LadiesNight": "NO"
+    },
+    "dj": {
+      "turno1": "Tomas",
+      "turno2": "Lucas"
+    }
+  },
+  {
+    "fecha": "2023-12-15T12:00:00.000Z",
+    "edades": {
+      "18-21": 110,
+      "22-26": 105,
+      "27-31": 55,
+      "32-36": 35,
+      "37-41": 15,
+      "42-46": 8
+    },
+    "estado_civil": {
+      "casado": 35,
+      "soltero": 210,
+      "divoriciado": 25
+    },
+    "genero": {
+      "masculino": 150,
+      "femenino": 225
+    },
+    "facturacion_dia": {
+      "total": 11500.0
+    },
+    "promociones": {
+      "Margarita3x2": 10,
+      "LadiesNight": "NO"
+    },
+    "dj": {
+      "turno1": "Danny",
+      "turno2": "Tomas"
+    }
+  },
+  {
+    "fecha": "2023-12-16T13:00:00.000Z",
+    "edades": {
+      "18-21": 105,
+      "22-26": 110,
+      "27-31": 60,
+      "32-36": 40,
+      "37-41": 20,
+      "42-46": 10
+    },
+    "estado_civil": {
+      "casado": 40,
+      "soltero": 200,
+      "divoriciado": 30
+    },
+    "genero": {
+      "masculino": 160,
+      "femenino": 220
+    },
+    "facturacion_dia": {
+      "total": 14000.0
+    },
+    "promociones": {
+      "Margarita3x2": 35,
+      "LadiesNight": "SI"
+    },
+    "dj": {
+      "turno1": "Lucas",
+      "turno2": "Danny"
+    }
+  }
+]

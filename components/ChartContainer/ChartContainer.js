@@ -3,6 +3,8 @@ import Edades from '../InfoCharts/Edades';
 import './ChartContainer.css';
 import Genero from '../InfoCharts/Genero';
 import EstadoCivilChart from '../InfoCharts/EstadoCivil';
+import Facturacion from '../InfoCharts/Facturacion';
+import DjPromoForm from '../InfoCharts/DjPromoForm';
 
 const ChartContainer = () => {
   return (
@@ -18,7 +20,14 @@ const ChartContainer = () => {
           <EstadoCivilChart />
         </div>
       </div>
-      <div className="bottom-row"></div>
+      <div className="bottom-row">
+        <div className="chart-cont">
+          <Facturacion />
+        </div>
+        <div className="chart-cont">
+          <DjPromoForm />
+        </div>
+      </div>
     </div>
   );
 };

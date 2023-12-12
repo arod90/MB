@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
       <html lang="en" className="h-full bg-white">
-        <body className={inter.className} class="h-full">
+        <body className={`${inter.className} h-full`}>
           <Dashboard>{children}</Dashboard>
         </body>
       </html>

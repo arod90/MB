@@ -42,6 +42,14 @@ function Edades() {
                 size: 20,
               },
             },
+            datalabels: {
+              align: 'end',
+              anchor: 'end',
+              color: '#000000',
+              formatter: function (value, context) {
+                return value;
+              },
+            },
           },
           scales: {
             y: {

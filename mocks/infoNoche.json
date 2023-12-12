@@ -24,5 +24,9 @@
   "promociones": {
     "Margarita3x2": 15,
     "LadiesNight": "SI"
+  },
+  "DJ": {
+    "turno1": "Danny",
+    "turno2": "Tomas"
   }
 }
