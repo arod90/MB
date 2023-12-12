@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+.clock-cont {
+  height: 10%;
+  display: flex;
+  align-items: center;
+  font-family: 'Roboto Mono', monospace;
+  padding: 30px;
+}
+
+.clock-cont h2 {
+  font-size: 4rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: rgb(17 24 39 / 0.8);
+}
+
+.clock-cont h3 {
+  font-size: 3rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  margin-left: 20px;
+  color: rgb(0, 0, 0);
+}

@@ -1,19 +1,28 @@
 {
+  "id": "3fa85f64-5717-4532-b3fc-2c963f66afa6",
+  "fecha": "2023-12-12T09:57:32.449Z",
   "edades": {
-    "18-21": 10,
-    "22-27": 2,
-    "27+": 40
+    "18-21": 123,
+    "22-26": 90,
+    "27-31": 40,
+    "32-36": 20,
+    "37-41": 0,
+    "42-46": 0
   },
   "estado_civil": {
-    "casado": 30,
-    "soltero": 20,
-    "div": 2
+    "casado": 23,
+    "soltero": 240,
+    "divoriciado": 13
   },
   "genero": {
-    "masculino": 2,
-    "femenino": 20
+    "masculino": 123,
+    "femenino": 240
   },
   "facturacion_dia": {
-    "total": 1000
+    "total": 12456.43
+  },
+  "promociones": {
+    "Margarita3x2": 15,
+    "LadiesNight": "SI"
   }
 }
