@@ -23,9 +23,46 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgb(17 24 39 / 0.8);
+  border: 1px solid rgb(193, 194, 198);
   border-radius: 10px;
   height: 100%;
   width: 31%;
   padding: 10px;
+}
+
+@media (min-width: 481px) and (max-width: 1025px) {
+  .top-row,
+  .bottom-row,
+  .chart-cont {
+    flex-direction: column; /* make the flex items lay out in a column */
+  }
+  .top-row,
+  .bottom-row {
+    min-height: 100%;
+  }
+  .chart-cont {
+    width: 90%;
+    min-height: 50vh;
+    margin-bottom: 20px;
+  }
+  .chart-container {
+    height: fit-content;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-row,
+  .bottom-row,
+  .chart-cont {
+    flex-direction: column; /* make the flex items lay out in a column */
+    width: 100%;
+  }
+  .chart-cont {
+    width: 100%;
+    min-height: 50vh;
+    margin-bottom: 20px;
+  }
+  .chart-container {
+    height: fit-content;
+  }
 }

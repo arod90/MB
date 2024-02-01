@@ -27,7 +27,7 @@ const ClientCard = ({ client }) => {
   const diffDays = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
 
   // Display birthday emojis if the birthday is within one week
-  const birthdaySoon = diffDays <= 7 ? 'cumpleaños 🎂🎉' : '';
+  const birthdaySoon = diffDays <= 7 && diffDays >= -7 ? 'cumpleaños 🎂🎉' : '';
 
   return (
     <div
