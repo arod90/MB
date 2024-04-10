@@ -47,13 +47,17 @@ section {
   padding: 10px;
 }
 
-.scan-button {
+.file-input {
+  display: none;
+}
+
+.custom-file-button {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100%;
-  width: 120%;
+  width: 100%;
   border: 2px solid #ddd;
   border-radius: 10px;
   cursor: pointer;

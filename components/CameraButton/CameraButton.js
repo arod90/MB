@@ -1,29 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { PiIdentificationCardDuotone } from 'react-icons/pi';
 
 const CameraButton = () => {
   const [capturedImages, setCapturedImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const fileInputRef = useRef(null);
 
-  const captureImage = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }, // Use the rear camera
-      audio: false,
-    });
+  const handleCapture = async (event) => {
+    setIsLoading(true);
+    setError(null);
 
-    const track = stream.getTracks()[0];
-    const imageCapture = new ImageCapture(track);
-    const blob = await imageCapture.takePhoto();
-    const capturedImage = await new Promise((resolve) => {
+    try {
+      const capturedImage = event.target.files[0];
       const fileReader = new FileReader();
-      fileReader.onloadend = () => resolve(fileReader.result);
-      fileReader.readAsDataURL(blob);
-    });
+      fileReader.onloadend = () => {
+        const imageAsDataURL = fileReader.result;
 
-    track.stop();
-
-    return capturedImage;
+        if (capturedImages.length < 2) {
+          setCapturedImages([...capturedImages, imageAsDataURL]);
+        } else {
+          uploadImages([...capturedImages, imageAsDataURL]);
+        }
+      };
+      fileReader.readAsDataURL(capturedImage);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const uploadImages = async (images) => {
@@ -39,43 +44,26 @@ const CameraButton = () => {
     return response.ok;
   };
 
-  const handleCapture = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const capturedImage = await captureImage();
-
-      if (capturedImages.length < 2) {
-        setCapturedImages([...capturedImages, capturedImage]);
-      } else {
-        const success = await uploadImages(capturedImages);
-
-        if (success) {
-          alert('ID images submitted successfully!');
-          setCapturedImages([]);
-        } else {
-          throw new Error('Failed to submit ID images.');
-        }
-      }
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleClick = () => {
+    fileInputRef.current.click();
   };
 
   return (
     <div className="h-full">
       {isLoading && <div>Loading...</div>}
       {error && <div>Error: {error}</div>}
-      <button
-        className="scan-button"
-        onClick={handleCapture}
-        disabled={isLoading}
-      >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        multiple={true}
+        onChange={handleCapture}
+        className="file-input"
+      />
+      <button onClick={handleClick} className="custom-file-button">
         <PiIdentificationCardDuotone />
-        <span>Escanear Cedula</span>
+        Escanear Cedula
       </button>
     </div>
   );
