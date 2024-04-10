@@ -1,53 +1,79 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { PiIdentificationCardDuotone } from 'react-icons/pi';
 
 const CameraButton = () => {
   const [capturedImages, setCapturedImages] = useState([]);
-  const videoRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const captureImage = async () => {
+    const stream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      audio: false,
+    });
+
+    const track = stream.getTracks()[0];
+    const imageCapture = new ImageCapture(track);
+    const blob = await imageCapture.grabFrame();
+    const capturedImage = await new Promise((resolve) => {
+      const fileReader = new FileReader();
+      fileReader.onloadend = () => resolve(fileReader.result);
+      fileReader.readAsDataURL(blob);
+    });
+
+    track.stop();
+
+    return capturedImage;
+  };
+
+  const uploadImages = async (images) => {
+    const formData = new FormData();
+    formData.append('frontID', images[0]);
+    formData.append('backID', images[1]);
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    return response.ok;
+  };
 
   const handleCapture = async () => {
+    setIsLoading(true);
+    setError(null);
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const video = videoRef.current;
-      video.srcObject = stream;
-      video.play();
+      const capturedImage = await captureImage();
 
-      video.onclick = async () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        const capturedImage = canvas.toDataURL('image/png');
+      if (capturedImages.length < 2) {
+        setCapturedImages([...capturedImages, capturedImage]);
+      } else {
+        const success = await uploadImages(capturedImages);
 
-        if (capturedImages.length < 2) {
-          setCapturedImages([...capturedImages, capturedImage]);
+        if (success) {
+          alert('ID images submitted successfully!');
+          setCapturedImages([]);
         } else {
-          const formData = new FormData();
-          formData.append('frontID', capturedImages[0].split(',')[1]);
-          formData.append('backID', capturedImages[1].split(',')[1]);
-
-          const response = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData,
-          });
-
-          if (response.ok) {
-            alert('ID images submitted successfully!');
-            setCapturedImages([]);
-          } else {
-            alert('Failed to submit ID images.');
-          }
+          throw new Error('Failed to submit ID images.');
         }
-      };
+      }
     } catch (error) {
-      console.error('Error accessing camera:', error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="h-full">
-      <video ref={videoRef} style={{ display: 'none' }} />
-      <button className="scan-button" onClick={handleCapture}>
+      {isLoading && <div>Loading...</div>}
+      {error && <div>Error: {error}</div>}
+      <button
+        className="scan-button"
+        onClick={handleCapture}
+        disabled={isLoading}
+      >
         <PiIdentificationCardDuotone />
         <span>Escanear Cedula</span>
       </button>
