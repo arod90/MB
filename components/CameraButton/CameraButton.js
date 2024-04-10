@@ -16,17 +16,20 @@ const CameraButton = () => {
       const fileReader = new FileReader();
       fileReader.onloadend = () => {
         const imageAsDataURL = fileReader.result;
-        const newImages = [...capturedImages, imageAsDataURL];
 
-        setCapturedImages(newImages);
+        setCapturedImages((prevImages) => {
+          const newImages = [...prevImages, imageAsDataURL];
 
-        // If less than 2 images have been captured, open the camera again
-        if (newImages.length < 2) {
-          fileInputRef.current.value = null;
-          fileInputRef.current.click();
-        } else {
-          uploadImages(newImages);
-        }
+          // If less than 2 images have been captured, open the camera again
+          if (newImages.length < 2) {
+            fileInputRef.current.value = null;
+            fileInputRef.current.click();
+          } else {
+            uploadImages(newImages);
+          }
+
+          return newImages;
+        });
       };
       fileReader.readAsDataURL(capturedImage);
     } catch (error) {
