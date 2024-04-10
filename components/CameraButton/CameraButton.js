@@ -7,14 +7,14 @@ const CameraButton = () => {
   const [error, setError] = useState(null);
 
   const captureImage = async () => {
-    const stream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }, // Use the rear camera
       audio: false,
     });
 
     const track = stream.getTracks()[0];
     const imageCapture = new ImageCapture(track);
-    const blob = await imageCapture.grabFrame();
+    const blob = await imageCapture.takePhoto();
     const capturedImage = await new Promise((resolve) => {
       const fileReader = new FileReader();
       fileReader.onloadend = () => resolve(fileReader.result);
