@@ -17,10 +17,14 @@ const CameraButton = () => {
       fileReader.onloadend = () => {
         const imageAsDataURL = fileReader.result;
 
-        if (capturedImages.length < 2) {
-          setCapturedImages([...capturedImages, imageAsDataURL]);
+        setCapturedImages([...capturedImages, imageAsDataURL]);
+
+        // If less than 2 images have been captured, open the camera again
+        if (capturedImages.length < 1) {
+          fileInputRef.current.value = null;
+          fileInputRef.current.click();
         } else {
-          uploadImages([...capturedImages, imageAsDataURL]);
+          uploadImages(capturedImages);
         }
       };
       fileReader.readAsDataURL(capturedImage);
