@@ -47,18 +47,18 @@ section {
   padding: 10px;
 }
 
-.scan-button-cont button {
-  height: 100%;
+.scan-button {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 20%;
+  height: 100%;
+  width: 120%;
   border: 2px solid #ddd;
   border-radius: 10px;
   cursor: pointer;
 }
 
 .scan-button-cont button:active {
-  transform: translateY(2px);
+  transform: translateY(1px);
 }
