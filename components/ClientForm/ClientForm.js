@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef } from 'react';
 import { IdentificationIcon, CreditCardIcon } from '@heroicons/react/24/solid';
-import { PiIdentificationCardDuotone } from 'react-icons/pi';
+import { ToastContainer } from 'react-toastify';
 
 export default function ClientForm() {
   const [frontImage, setFrontImage] = useState(null);
@@ -65,6 +65,10 @@ export default function ClientForm() {
       body: formData,
     });
 
+    if (response.ok) {
+      toast('Client registered successfully');
+    }
+
     return response.ok;
   };
 
@@ -82,10 +86,15 @@ export default function ClientForm() {
       body: formData,
     });
 
+    if (response.ok) {
+      toast('Client registered successfully');
+    }
+
     return response.ok;
   };
   return (
     <form>
+      <ToastContainer />
       <div className="space-y-12">
         <div>
           <h2 className="text-base font-semibold leading-7 text-gray-900">
@@ -106,12 +115,12 @@ export default function ClientForm() {
                     {frontImage ? (
                       <img
                         src={frontImage}
-                        className="h-28 ml-4"
+                        className="h-28 mx-auto"
                         alt="Front ID preview"
                       />
                     ) : (
                       <IdentificationIcon
-                        className="mx-auto h-28 w-28 text-gray-300"
+                        className=" h-28 w-28 text-gray-300 mx-auto"
                         aria-hidden="true"
                       />
                     )}
@@ -147,7 +156,7 @@ export default function ClientForm() {
                     {backImage ? (
                       <img
                         src={backImage}
-                        className="h-28 ml-4"
+                        className="h-28 mx-auto"
                         alt="Back ID preview"
                       />
                     ) : (
