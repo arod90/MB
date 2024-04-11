@@ -30,12 +30,12 @@ const navigation = [
   },
   { name: 'Clientes', href: '/clientes', icon: UsersIcon, current: false },
   // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-  {
-    name: 'Documentos',
-    href: '/documentos',
-    icon: DocumentDuplicateIcon,
-    current: false,
-  },
+  // {
+  //   name: 'Documentos',
+  //   href: '/documentos',
+  //   icon: DocumentDuplicateIcon,
+  //   current: false,
+  // },
   { name: 'Reportes', href: '/reportes', icon: ChartPieIcon, current: false },
 ];
 const teams = [
