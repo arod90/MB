@@ -141,7 +141,7 @@ export default function ClientForm() {
                           className="sr-only"
                         />
                       </label>
-                      <p className="pl-1 text-md">frente de la cedula</p>
+                      <p className="pl-1 text-md">frente de cedula</p>
                     </div>
                     {/* <p className="text-xs leading-5 text-gray-600">
                       PNG, JPG, GIF up to 10MB
@@ -183,7 +183,7 @@ export default function ClientForm() {
                           className="sr-only"
                         />
                       </label>
-                      <p className="pl-1 text-md">dorso de la cedula</p>
+                      <p className="pl-1 text-md">dorso de cedula</p>
                     </div>
                     {/* <p className="text-xs leading-5 text-gray-600">
                       PNG, JPG, GIF up to 10MB
