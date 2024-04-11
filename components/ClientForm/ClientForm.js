@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useRef } from 'react';
-import { PhotoIcon, UserCircleIcon } from '@heroicons/react/24/solid';
+import { IdentificationIcon, CreditCardIcon } from '@heroicons/react/24/solid';
 import { PiIdentificationCardDuotone } from 'react-icons/pi';
 
 export default function ClientForm() {
@@ -110,7 +110,7 @@ export default function ClientForm() {
                         alt="Front ID preview"
                       />
                     ) : (
-                      <PhotoIcon
+                      <IdentificationIcon
                         className="mx-auto h-28 w-28 text-gray-300"
                         aria-hidden="true"
                       />
@@ -132,7 +132,7 @@ export default function ClientForm() {
                           className="sr-only"
                         />
                       </label>
-                      <p className="pl-1 text-md">o subir imagen</p>
+                      <p className="pl-1 text-md">frente de la cedula</p>
                     </div>
                     {/* <p className="text-xs leading-5 text-gray-600">
                       PNG, JPG, GIF up to 10MB
@@ -151,7 +151,7 @@ export default function ClientForm() {
                         alt="Back ID preview"
                       />
                     ) : (
-                      <PhotoIcon
+                      <CreditCardIcon
                         className="mx-auto h-28 w-28 text-gray-300"
                         aria-hidden="true"
                       />
@@ -174,7 +174,7 @@ export default function ClientForm() {
                           className="sr-only"
                         />
                       </label>
-                      <p className="pl-1 text-md">o subir imagen</p>
+                      <p className="pl-1 text-md">dorso de la cedula</p>
                     </div>
                     {/* <p className="text-xs leading-5 text-gray-600">
                       PNG, JPG, GIF up to 10MB
