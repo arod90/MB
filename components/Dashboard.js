@@ -13,6 +13,7 @@ import {
   HomeIcon,
   UsersIcon,
   XMarkIcon,
+  CameraIcon,
 } from '@heroicons/react/24/outline';
 import {
   ChevronDownIcon,
@@ -21,14 +22,14 @@ import {
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: HomeIcon, current: true },
-  { name: 'Clientes', href: '/clientes', icon: UsersIcon, current: false },
-  // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
   {
-    name: 'Calendario',
-    href: '/calendario',
-    icon: CalendarIcon,
+    name: 'Registro de ingreso',
+    href: '/registro',
+    icon: CameraIcon,
     current: false,
   },
+  { name: 'Clientes', href: '/clientes', icon: UsersIcon, current: false },
+  // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
   {
     name: 'Documentos',
     href: '/documentos',
@@ -352,7 +353,6 @@ export default function Dashboard({ children }) {
                 <Menu as="div" className="relative">
                   <Menu.Button className="-m-1.5 flex items-center p-1.5">
                     <span className="sr-only">Open user menu</span>
-                   
                   </Menu.Button>
                   <Transition
                     as={Fragment}
