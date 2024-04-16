@@ -77,3 +77,21 @@ section {
 .scan-button-cont button:active {
   transform: translateY(1px);
 }
+
+/* Reports CSS */
+/* Mobile and small devices */
+@media (max-width: 768px) {
+  .rdrDateRangePickerWrapper {
+    width: 100% !important; /* Forces the picker to take full width */
+    font-size: 12px; /* Smaller text to fit on mobile */
+  }
+
+  .rdrDefinedRangesWrapper,
+  .rdrMonthAndYearWrapper {
+    display: none; /* Optionally hides predefined ranges and the month/year selection on small screens */
+  }
+
+  .rdrCalendarWrapper {
+    padding: 0 !important;
+  }
+}
