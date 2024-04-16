@@ -78,7 +78,32 @@ section {
   transform: translateY(1px);
 }
 
+/* .rdrDateRangePickerWrapper {
+  position: relative;
+}
+
+.rdrDateRangeWrapper {
+  position: absolute;
+  z-index: 10;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+} */
+
 /* Reports CSS */
+.backdrop {
+  position: fixed; /* Cover the entire viewport */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* Semi-transparent black for visibility */
+  z-index: 999; /* Ensure it sits below the date picker but above other content */
+}
 /* Mobile and small devices */
 @media (max-width: 768px) {
   .rdrDateRangePickerWrapper {
