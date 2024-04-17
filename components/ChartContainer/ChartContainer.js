@@ -5,27 +5,28 @@ import Genero from '../InfoCharts/Genero';
 import EstadoCivilChart from '../InfoCharts/EstadoCivil';
 import Facturacion from '../InfoCharts/Facturacion';
 import DjPromoForm from '../InfoCharts/DjPromoForm';
+import data from '../../mocks/infoNoche.json';
 
 const ChartContainer = () => {
   return (
     <div className="chart-container">
       <div className="top-row">
         <div className="chart-cont">
-          <Edades />
+          <Edades data={data.edades} />
         </div>
         <div className="chart-cont">
-          <Genero />
+          <Genero data={data.genero} />
         </div>
         <div className="chart-cont">
-          <EstadoCivilChart />
+          <EstadoCivilChart data={data.estado_civil} />
         </div>
       </div>
       <div className="bottom-row">
         <div className="chart-cont">
-          <Facturacion />
+          <Facturacion data={data.facturacion_dia} />
         </div>
         <div className="chart-cont">
-          <DjPromoForm />
+          <DjPromoForm data={data.dj} />
         </div>
       </div>
     </div>

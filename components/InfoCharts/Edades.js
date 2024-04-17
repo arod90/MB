@@ -4,7 +4,7 @@ import data from '../../mocks/infoNoche.json';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
-function Edades() {
+function Edades({ data }) {
   const chartRef = useRef(null);
   let myChart = null; // variable to hold the chart instance
 
@@ -21,11 +21,11 @@ function Edades() {
       myChart = new Chart(ctx, {
         type: 'bar', // change this to the type of chart you want
         data: {
-          labels: Object.keys(data.edades), // use the keys from the "edades" section as labels
+          labels: Object.keys(data), // use the keys from the "edades" section as labels
           datasets: [
             {
               label: 'Edades', // label for the dataset
-              data: Object.values(data.edades), // use the values from the "edades" section as data
+              data: Object.values(data), // use the values from the "edades" section as data
               backgroundColor: 'rgba(75, 192, 192, 0.2)', // color of the bars
               borderColor: 'rgba(75, 192, 192, 1)', // color of the bar borders
               borderWidth: 1, // width of the bar borders

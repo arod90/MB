@@ -9,6 +9,7 @@ import format from 'date-fns/format';
 import { es } from 'date-fns/locale'; // Importing Spanish locale
 import useWindowSize from '../../hooks/useWindowSize';
 import { defineStaticRanges } from 'react-date-range';
+import DayView from '@/components/DayView/DayView';
 
 const Reportes = () => {
   const [state, setState] = useState([
@@ -59,7 +60,7 @@ const Reportes = () => {
   }, []);
 
   return (
-    <section>
+    <section className="h-full">
       <button
         className="rounded-md bg-indigo-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
         onClick={togglePicker}
@@ -69,7 +70,16 @@ const Reportes = () => {
       <span className="ml-3 text-sm text-gray-700">{formatDates()}</span>
       {isVisible && <div className="backdrop"></div>}
       {isVisible && (
-        <div ref={pickerRef} style={{ position: 'absolute', zIndex: 1000 }}>
+        <div
+          ref={pickerRef}
+          className="fadeInSlideUp mt-10"
+          style={{
+            position: 'absolute',
+            zIndex: 1000,
+            borderRadius: '8px',
+            overflow: 'hidden',
+          }}
+        >
           <DateRangePicker
             onChange={handleSelect}
             showSelectionPreview={true}
@@ -84,7 +94,9 @@ const Reportes = () => {
       )}
       {format(state[0].startDate, 'yyyy-MM-dd') ===
       format(state[0].endDate, 'yyyy-MM-dd') ? (
-        <DayChart date={state[0].startDate} />
+        <div className="w-full h-full">
+          <DayView date={state[0].startDate} />
+        </div>
       ) : (
         <LineChart startDate={state[0].startDate} endDate={state[0].endDate} />
       )}

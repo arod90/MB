@@ -4,7 +4,7 @@ import data from '../../mocks/infoNoche.json';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
-function Genero() {
+function Genero({ data }) {
   const chartRef = useRef(null);
   let myChart = null; // variable to hold the chart instance
 
@@ -21,11 +21,11 @@ function Genero() {
       myChart = new Chart(ctx, {
         type: 'pie', // change this to the type of chart you want
         data: {
-          labels: Object.keys(data.genero), // use the keys from the "genero" section as labels
+          labels: Object.keys(data), // use the keys from the "genero" section as labels
           datasets: [
             {
               label: 'Genero', // label for the dataset
-              data: Object.values(data.genero), // use the values from the "genero" section as data
+              data: Object.values(data), // use the values from the "genero" section as data
               backgroundColor: [
                 'rgba(75, 192, 192, 0.2)',
                 'rgba(192, 75, 75, 0.2)',

@@ -1,14 +1,36 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
-import 'chartjs-adapter-moment';
 import data from '../../mocks/infoNoche.json';
 
 function BarChart() {
   const chartRef = useRef(null);
+  const [tooltipData, setTooltipData] = useState([]);
 
   useEffect(() => {
+    // Function to prepare the tooltip data
+    const prepareTooltipData = () => {
+      return {
+        Edades: Object.entries(data.edades).map(
+          ([key, value]) => `${key}: ${value}`
+        ),
+        'Estado Civil': Object.entries(data.estado_civil).map(
+          ([key, value]) => `${key}: ${value}`
+        ),
+        Genero: Object.entries(data.genero).map(
+          ([key, value]) => `${key}: ${value}`
+        ),
+        Promociones: Object.entries(data.promociones).map(
+          ([key, value]) => `${key}: ${value}`
+        ),
+        DJ: Object.entries(data.DJ).map(([key, value]) => `${key}: ${value}`),
+      };
+    };
+
+    // Set the tooltip data in state
+    setTooltipData(prepareTooltipData());
+
     if (chartRef.current) {
       const chart = new Chart(chartRef.current, {
         type: 'bar',
@@ -17,58 +39,25 @@ function BarChart() {
           datasets: [
             {
               label: 'Facturacion del dia',
-              data: [data.facturacion_dia.total], // use the facturacion_dia.total value from infoNoche.json
+              data: [data.facturacion_dia.total],
               backgroundColor: 'rgb(75, 192, 192)',
               borderColor: 'rgba(75, 192, 192, 0.2)',
+              maxBarThickness: 80,
             },
           ],
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: false,
           scales: {
             x: {
-              barPercentage: 0.4, // adjust the bar thickness //!not working
+              maxBarThickness: 10,
             },
             y: {
               beginAtZero: true,
             },
           },
-          plugins: {
-            tooltip: {
-              callbacks: {
-                footer: function () {
-                  // include the additional data in the tooltip
-                  const edadesArray = Object.entries(data.edades).map(
-                    ([key, value]) => `${key}: ${value}`
-                  );
-                  const estadoCivilArray = Object.entries(
-                    data.estado_civil
-                  ).map(([key, value]) => `${key}: ${value}`);
-                  const generoArray = Object.entries(data.genero).map(
-                    ([key, value]) => `${key}: ${value}`
-                  );
-                  const promocionesArray = Object.entries(data.promociones).map(
-                    ([key, value]) => `${key}: ${value}`
-                  );
-                  const djArray = Object.entries(data.DJ).map(
-                    ([key, value]) => `${key}: ${value}`
-                  );
-
-                  return [
-                    'Edades',
-                    ...edadesArray,
-                    'Estado Civil',
-                    ...estadoCivilArray,
-                    'Genero',
-                    ...generoArray,
-                    'Promociones',
-                    ...promocionesArray,
-                    'DJ',
-                    ...djArray,
-                  ];
-                },
-              },
-            },
-          },
+          // You can leave the tooltip options as is if you want to display the tooltip on hover as well.
         },
       });
 
@@ -76,7 +65,28 @@ function BarChart() {
     }
   }, []);
 
-  return <canvas ref={chartRef} />;
+  return (
+    <div className="h-full w-full flex day-cont">
+      <div className="h-full w-full sm:w-5/12">
+        <canvas
+          ref={chartRef}
+          style={{ position: 'relative', height: '75vh', width: '100%' }}
+        />
+      </div>
+      <div className="tooltip-data-container w-full h-6/8 sm:w-7/12">
+        {Object.entries(tooltipData).map(([category, values], index) => (
+          <div key={index} className="category-box">
+            <h3>{category}</h3>
+            {values.map((value, idx) => (
+              <div key={idx} className="data-entry">
+                {value}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default BarChart;
