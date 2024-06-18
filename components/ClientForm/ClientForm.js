@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useRef } from 'react';
 import { IdentificationIcon, CreditCardIcon } from '@heroicons/react/24/solid';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 export default function ClientForm() {
   const [frontImage, setFrontImage] = useState(null);
@@ -12,18 +12,13 @@ export default function ClientForm() {
   const frontInputRef = useRef(null);
   const backInputRef = useRef(null);
 
-  const handleFrontCapture = async (event) => {
+  const handleCapture = async (event, setImage) => {
     setIsLoading(true);
     setError(null);
 
     try {
       const capturedImage = event.target.files[0];
-      const fileReader = new FileReader();
-      fileReader.onloadend = () => {
-        const imageAsDataURL = fileReader.result;
-        setFrontImage(imageAsDataURL);
-      };
-      fileReader.readAsDataURL(capturedImage);
+      setImage(capturedImage);
     } catch (error) {
       setError(error.message);
     } finally {
@@ -31,46 +26,83 @@ export default function ClientForm() {
     }
   };
 
-  const handleBackCapture = async (event) => {
-    setIsLoading(true);
-    setError(null);
+  const uploadImageToApi = async (file) => {
+    const base64File = await toBase64(file);
+    const response = await fetch('/api/uploadId', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        file: base64File.split(',')[1],
+        name: file.name,
+        type: file.type,
+      }),
+    });
 
-    try {
-      const capturedImage = event.target.files[0];
-      const fileReader = new FileReader();
-      fileReader.onloadend = () => {
-        const imageAsDataURL = fileReader.result;
-        setBackImage(imageAsDataURL);
-      };
-      fileReader.readAsDataURL(capturedImage);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error);
     }
+
+    return data.url;
   };
 
   const uploadImages = async () => {
+    console.log('Upload images function called');
     if (!frontImage || !backImage) {
       setError('Please capture both front and back images before uploading.');
+      console.error('Both images are required');
       return;
     }
 
-    const formData = new FormData();
-    formData.append('frontID', frontImage);
-    formData.append('backID', backImage);
+    setIsLoading(true);
+    try {
+      console.log('Uploading front image to API...');
+      const frontImageUrl = await uploadImageToApi(frontImage);
+      console.log('Front Image URL:', frontImageUrl);
 
-    const response = await fetch('/api/upload', {
-      method: 'POST',
-      body: formData,
-    });
+      console.log('Uploading back image to API...');
+      const backImageUrl = await uploadImageToApi(backImage);
+      console.log('Back Image URL:', backImageUrl);
 
-    if (response.ok) {
-      toast('Client registered successfully');
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_AWS_URL}usuario/image`,
+        {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            front_image_url: frontImageUrl,
+            back_image_url: backImageUrl,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast('Client registered successfully');
+        console.log('Images uploaded successfully');
+      } else {
+        setError('Failed to upload images.');
+        console.error('Failed to upload images:', response.statusText);
+      }
+    } catch (error) {
+      setError(error.message);
+      console.error('Error during image upload:', error);
+    } finally {
+      setIsLoading(false);
     }
-
-    return response.ok;
   };
+
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
 
   const uploadID = async () => {
     if (!idNum) {
@@ -92,6 +124,7 @@ export default function ClientForm() {
 
     return response.ok;
   };
+
   return (
     <form>
       <ToastContainer />
@@ -107,14 +140,11 @@ export default function ClientForm() {
           <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
             <div className="col-span-full">
               <div className="image-cont">
-                <div
-                  // onClick={() => frontInputRef.current.click()}
-                  className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-4 py-4 w-2/3 md:w-full lg:w-1/2"
-                >
+                <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-4 py-4 w-2/3 md:w-full lg:w-1/2">
                   <div className="text-center">
                     {frontImage ? (
                       <img
-                        src={frontImage}
+                        src={URL.createObjectURL(frontImage)}
                         className="h-28 mx-auto"
                         alt="Front ID preview"
                       />
@@ -137,25 +167,19 @@ export default function ClientForm() {
                           ref={frontInputRef}
                           accept="image/*"
                           capture="environment"
-                          onChange={handleFrontCapture}
+                          onChange={(e) => handleCapture(e, setFrontImage)}
                           className="sr-only"
                         />
                       </label>
                       <p className="pl-1 text-md">frente de cedula</p>
                     </div>
-                    {/* <p className="text-xs leading-5 text-gray-600">
-                      PNG, JPG, GIF up to 10MB
-                    </p> */}
                   </div>
                 </div>
-                <div
-                  // onClick={() => backInputRef.current.click()}
-                  className="mt-2 flex justify-center rounded-lg border  border-dashed border-gray-900/25 px-6 py-10 w-2/3 md:w-full lg:w-1/2"
-                >
+                <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 w-2/3 md:w-full lg:w-1/2">
                   <div className="text-center">
                     {backImage ? (
                       <img
-                        src={backImage}
+                        src={URL.createObjectURL(backImage)}
                         className="h-28 mx-auto"
                         alt="Back ID preview"
                       />
@@ -165,7 +189,6 @@ export default function ClientForm() {
                         aria-hidden="true"
                       />
                     )}
-
                     <div className="mt-4 flex items-center justify-center text-sm leading-6 text-gray-600">
                       <label
                         htmlFor="back-upload"
@@ -179,15 +202,12 @@ export default function ClientForm() {
                           type="file"
                           accept="image/*"
                           capture="environment"
-                          onChange={handleBackCapture}
+                          onChange={(e) => handleCapture(e, setBackImage)}
                           className="sr-only"
                         />
                       </label>
                       <p className="pl-1 text-md">dorso de cedula</p>
                     </div>
-                    {/* <p className="text-xs leading-5 text-gray-600">
-                      PNG, JPG, GIF up to 10MB
-                    </p> */}
                   </div>
                 </div>
               </div>
@@ -205,6 +225,7 @@ export default function ClientForm() {
             Cancelar
           </button>
           <button
+            type="button"
             onClick={uploadImages}
             className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
@@ -245,13 +266,8 @@ export default function ClientForm() {
             </div>
           </div>
           <div className="mt-5 flex items-center justify-start gap-x-6">
-            {/* <button
-              type="button"
-              className="text-sm font-semibold leading-6 text-gray-900"
-            >
-              Cancelar
-            </button> */}
             <button
+              type="button"
               onClick={uploadID}
               className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >

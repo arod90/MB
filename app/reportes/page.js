@@ -33,16 +33,27 @@ const Reportes = () => {
 
   const monthsToShow = size.width <= 768 ? 1 : 2;
 
+  // const formatDates = () => {
+  //   const { startDate, endDate } = state[0];
+  //   if (format(startDate, 'yyyy-MM-dd') === format(endDate, 'yyyy-MM-dd')) {
+  //     return format(startDate, 'PPP', { locale: es }); // Formatting date in Spanish
+  //   } else {
+  //     return `${format(startDate, 'PPP', { locale: es })} - ${format(
+  //       endDate,
+  //       'PPP',
+  //       { locale: es }
+  //     )}`;
+  //   }
+  // };
+
   const formatDates = () => {
     const { startDate, endDate } = state[0];
-    if (format(startDate, 'yyyy-MM-dd') === format(endDate, 'yyyy-MM-dd')) {
-      return format(startDate, 'PPP', { locale: es }); // Formatting date in Spanish
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (format(start, 'yyyy-MM-dd') === format(end, 'yyyy-MM-dd')) {
+      return format(start, 'dd-MM-yyyy'); // Formatting date in DD-MM-YYYY format
     } else {
-      return `${format(startDate, 'PPP', { locale: es })} - ${format(
-        endDate,
-        'PPP',
-        { locale: es }
-      )}`;
+      return `${format(start, 'dd-MM-yyyy')} - ${format(end, 'dd-MM-yyyy')}`;
     }
   };
 
@@ -92,13 +103,16 @@ const Reportes = () => {
           />
         </div>
       )}
-      {format(state[0].startDate, 'yyyy-MM-dd') ===
-      format(state[0].endDate, 'yyyy-MM-dd') ? (
+      {format(state[0].startDate, 'dd-MM-yyyy') ===
+      format(state[0].endDate, 'dd-MM-yyyy') ? (
         <div className="w-full h-full">
           <DayView date={state[0].startDate} />
         </div>
       ) : (
-        <LineChart startDate={state[0].startDate} endDate={state[0].endDate} />
+        <LineChart
+          startDate={format(state[0].startDate, 'dd-MM-yyyy')}
+          endDate={format(state[0].endDate, 'dd-MM-yyyy')}
+        />
       )}
     </section>
   );
