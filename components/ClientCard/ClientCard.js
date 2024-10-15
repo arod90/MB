@@ -1,15 +1,21 @@
 import React from 'react';
 import './ClientCard.css';
+import Image from 'next/image';
 import { RiVipFill, RiUserStarLine } from 'react-icons/ri';
 
 const ClientCard = ({ client }) => {
-  const birthDate = new Date(client.fechaNacimiento);
+  const birthDate = new Date(client.FechaNacimiento);
   const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
+
+  // Correct age calculation
+  const age =
+    today.getFullYear() -
+    birthDate.getFullYear() -
+    (today.getMonth() < birthDate.getMonth() ||
+    (today.getMonth() === birthDate.getMonth() &&
+      today.getDate() < birthDate.getDate())
+      ? 1
+      : 0);
 
   const formattedDate = `${birthDate.getDate()}/${
     birthDate.getMonth() + 1
@@ -21,83 +27,111 @@ const ClientCard = ({ client }) => {
     birthDate.getMonth(),
     birthDate.getDate()
   );
-  if (nextBirthday - today < 0) {
+  if (nextBirthday < today) {
     nextBirthday.setFullYear(today.getFullYear() + 1);
   }
   const diffDays = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
 
-  // Display birthday emojis if the birthday is within one week
-  const birthdaySoon = diffDays <= 7 && diffDays >= -7 ? 'cumpleaños 🎂🎉' : '';
+  // Display birthday emojis if the birthday is within one week (before or after)
+  const birthdaySoon = diffDays <= 7 && diffDays > -7 ? 'cumpleaños 🎂🎉' : '';
+
+  const getClientStatus = (numIngresos) => {
+    if (numIngresos >= 41) return 'VIP';
+    if (numIngresos >= 10) return 'Frecuente';
+    return 'Nuevo';
+  };
+
+  const clientStatus = getClientStatus(client.NumIngresos);
+
+  // Calculate total consumption
+  const totalConsumo = client.Consumos_general.reduce(
+    (total, consumo) => total + parseFloat(consumo.Monto),
+    0
+  ).toFixed(2);
 
   return (
     <div
       className={`card-cont ${
-        client.ingresos.num_ingresos >= 10 && client.ingresos.num_ingresos <= 40
+        clientStatus === 'VIP'
+          ? 'gold-background'
+          : clientStatus === 'Frecuente'
           ? 'green-background'
           : ''
-      }${client.ingresos.num_ingresos >= 41 ? 'gold-background' : ''}`}
+      }`}
     >
       <div className="pic-cont">
-        <img src="https://via.placeholder.com/120" alt="Profile" />
+        <Image
+          src={client.imageUrl || 'https://via.placeholder.com/120'}
+          alt={`${client.Nombre} ${client.Apellido}`}
+          width={100}
+          height={100}
+          className="rounded-full object-cover"
+        />
       </div>
       <div className="info-cont">
         <div className="name-cont">
           <div className="icon-cont">
-            {client.ingresos.num_ingresos >= 10 &&
-              client.ingresos.num_ingresos <= 40 && (
-                <RiUserStarLine size={35} />
-              )}
-            {client.ingresos.num_ingresos > 40 && <RiVipFill size={35} />}
+            {clientStatus === 'VIP' && <RiVipFill size={35} />}
+            {clientStatus === 'Frecuente' && <RiUserStarLine size={35} />}
           </div>
-          {client.nombre} {client.apellido}
+          {client.Nombre} {client.Apellido}
         </div>
-        <p className="ci">
-          <strong>CI:</strong> {client.ci}
+        <p className="text-sm">
+          <strong>CI:</strong> {client.CI}
         </p>
-        <p className="birthday">
-          <strong>Fecha de Nacimiento:</strong> {formattedDate} <br /> (Edad:{' '}
-          {age}) {birthdaySoon}
+        <p className="text-sm">
+          <strong>Fecha de Nacimiento:</strong> {formattedDate} (Edad: {age}){' '}
+          {birthdaySoon} <br />
         </p>
-        <p></p>
-        <p>
-          <strong>Lugar de nacimiento: </strong> {client.lugarNacimiento}
+        <p className="text-sm">
+          <strong>Género:</strong> {client.Genero}
         </p>
-        <p>
-          <strong>Hora de ingreso: </strong> {client.horaIngreso}
+        <p className="text-sm">
+          <strong>Lugar de nacimiento:</strong> {client.LugarNacimiento}
         </p>
-        {/* TODO maybe add this?? */}
-        {/* <p>Distintivo</p>
-        <input type="text" /> */}
+        <p className="text-sm">
+          <strong>Estado Civil:</strong>{' '}
+          {client.EstadoCivil || 'No especificado'}
+        </p>
+
         <h2>Historia del cliente</h2>
+        <p className="text-sm">
+          <strong>No. visitas:</strong> {client.NumIngresos} ({clientStatus})
+        </p>
+        <p className="text-sm">
+          <strong>Último ingreso:</strong>{' '}
+          {new Date(
+            client.Ingresos[client.Ingresos.length - 1]?.Fecha
+          ).toLocaleString()}
+        </p>
+        <p className="text-sm">
+          <strong>Consumo total:</strong> ${totalConsumo}
+        </p>
+        <h4 className="text-xl">
+          <strong>Historial de Consumo</strong>
+        </h4>
         <div className="consumo-cont">
-          {client.ingresos.num_ingresos ? (
-            <>
-              <p>
-                <strong>no. visitas:</strong> {client.ingresos.num_ingresos}
-                {client.ingresos.num_ingresos >= 10 &&
-                  client.ingresos.num_ingresos <= 40 &&
-                  ' (cliente frecuente)'}
-                {client.ingresos.num_ingresos > 40 && ' (cliente VIP)'}
-              </p>
-              <p>
-                <strong>facturacion total:</strong>{' '}
-                {client.ingresos.facturacion_total} $
-              </p>
-            </>
-          ) : (
-            <p>primera visita</p>
-          )}
-          <h4>
-            <strong>Perfil de consumo</strong>
-          </h4>
-          {Object.keys(client.ingresos.items_pref).length === 0 ? (
-            <p>Sin historial de consumo.</p>
-          ) : (
-            Object.entries(client.ingresos.items_pref).map(([item, count]) => (
-              <p key={item}>
-                {item}: {count}
-              </p>
+          {client.Consumos_general.length > 0 ? (
+            client.Consumos_general.map((consumo, index) => (
+              <div key={index} className="consumo-item">
+                <p>
+                  <strong>Fecha:</strong>{' '}
+                  {new Date(consumo.Fecha).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>Monto:</strong> ${consumo.Monto}
+                </p>
+                <ul>
+                  {consumo.Detalles.map((detalle, i) => (
+                    <li key={i}>
+                      • {detalle.Cantidad} - {detalle.Producto}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))
+          ) : (
+            <p>Sin historial de consumo.</p>
           )}
         </div>
       </div>

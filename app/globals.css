@@ -44,7 +44,7 @@ section {
 
 /* CLIENT PAGE CSS */
 .client-list {
-  height: 85%;
+  height: 100%;
   display: flex;
   overflow-x: scroll;
   padding: 10px;

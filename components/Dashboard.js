@@ -22,12 +22,12 @@ import {
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: HomeIcon, current: true },
-  {
-    name: 'Registro de ingreso',
-    href: '/registro',
-    icon: CameraIcon,
-    current: false,
-  },
+  // {
+  //   name: 'Registro de ingreso',
+  //   href: '/registro',
+  //   icon: CameraIcon,
+  //   current: false,
+  // },
   { name: 'Clientes', href: '/clientes', icon: UsersIcon, current: false },
   // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
   // {
