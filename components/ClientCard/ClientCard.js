@@ -1,13 +1,52 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './ClientCard.css';
 import Image from 'next/image';
 import { RiVipFill, RiUserStarLine } from 'react-icons/ri';
 
 const ClientCard = ({ client }) => {
+  console.log(client);
+
+  // State for image loading
+  const [imageUrl, setImageUrl] = useState(null);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
+
+  // Effect to fetch and process image
+  useEffect(() => {
+    const fetchImage = async () => {
+      const latestIngreso = client.Ingresos[client.Ingresos.length - 1];
+      if (!latestIngreso?.front_image_url) return;
+
+      setIsLoadingImage(true);
+      try {
+        const response = await fetch('/api/getImageProxy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url: latestIngreso.front_image_url }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch image');
+        }
+
+        const data = await response.json();
+        if (data.imageData) {
+          setImageUrl(data.imageData);
+        }
+      } catch (error) {
+        console.error('Error fetching image:', error);
+      } finally {
+        setIsLoadingImage(false);
+      }
+    };
+
+    fetchImage();
+  }, [client.Ingresos]);
+
+  // Calculate age
   const birthDate = new Date(client.FechaNacimiento);
   const today = new Date();
-
-  // Correct age calculation
   const age =
     today.getFullYear() -
     birthDate.getFullYear() -
@@ -60,13 +99,30 @@ const ClientCard = ({ client }) => {
       }`}
     >
       <div className="pic-cont">
-        <Image
-          src={client.imageUrl || 'https://via.placeholder.com/120'}
-          alt={`${client.Nombre} ${client.Apellido}`}
-          width={100}
-          height={100}
-          className="rounded-full object-cover"
-        />
+        {isLoadingImage ? (
+          <div className="w-[100px] h-[100px] rounded-full bg-gray-200 animate-pulse" />
+        ) : imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={`${client.Nombre} ${client.Apellido}`}
+            width={100}
+            height={100}
+            className="rounded-full object-cover"
+            unoptimized={true}
+            onError={(e) => {
+              console.error('Image failed to load:', imageUrl);
+              e.target.src = 'https://via.placeholder.com/120';
+            }}
+          />
+        ) : (
+          <Image
+            src="https://via.placeholder.com/120"
+            alt={`${client.Nombre} ${client.Apellido}`}
+            width={100}
+            height={100}
+            className="rounded-full object-cover"
+          />
+        )}
       </div>
       <div className="info-cont">
         <div className="name-cont">

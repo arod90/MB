@@ -1,5 +1,6 @@
 import ChartContainer from '@/components/ChartContainer/ChartContainer';
 import Clock from '@/components/Clock/Clock';
+import CustomerStaffMatching from '@/components/CustomerStaffMatching/CustomerStaffMatching';
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
     <section>
       <Clock />
       <ChartContainer />
+      <CustomerStaffMatching />
     </section>
   );
 }

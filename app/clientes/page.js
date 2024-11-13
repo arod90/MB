@@ -1,23 +1,25 @@
 'use client';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ClientCard from '@/components/ClientCard/ClientCard';
 import { useClientContext } from '@/context/ClientContext';
 import useClientData from '@/hooks/useClientData';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 const Clientes = () => {
   const { clients } = useClientContext();
-  const { refetch } = useClientData();
+  const { refetch, loading } = useClientData();
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   useEffect(() => {
-    // Initial fetch
-    refetch();
+    const fetchInitialData = async () => {
+      await refetch();
+      setInitialLoadComplete(true);
+    };
 
-    // Set up an interval to periodically refetch data
-    const intervalId = setInterval(() => {
-      refetch();
-    }, 5000); // Refetch every 5 seconds
+    fetchInitialData();
 
-    // Clean up the interval on component unmount
+    const intervalId = setInterval(refetch, 5000); // Refetch every 5 seconds
+
     return () => clearInterval(intervalId);
   }, [refetch]);
 
@@ -29,6 +31,10 @@ const Clientes = () => {
       return lastIngresoB - lastIngresoA;
     });
   }, [clients]);
+
+  if (!initialLoadComplete) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <section>

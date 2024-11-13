@@ -1,6 +1,6 @@
 'use client';
-
 import { Fragment, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Dialog, Menu, Transition } from '@headlessui/react';
 import {
   Bars3Icon,
@@ -21,32 +21,18 @@ import {
 } from '@heroicons/react/20/solid';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: HomeIcon, current: true },
-  // {
-  //   name: 'Registro de ingreso',
-  //   href: '/registro',
-  //   icon: CameraIcon,
-  //   current: false,
-  // },
-  { name: 'Clientes', href: '/clientes', icon: UsersIcon, current: false },
-  // { name: 'Projects', href: '#', icon: FolderIcon, current: false },
-  // {
-  //   name: 'Documentos',
-  //   href: '/documentos',
-  //   icon: DocumentDuplicateIcon,
-  //   current: false,
-  // },
-  { name: 'Reportes', href: '/reportes', icon: ChartPieIcon, current: false },
+  { name: 'Dashboard', href: '/', icon: HomeIcon },
+  { name: 'Clientes', href: '/clientes', icon: UsersIcon },
+  { name: 'Reportes', href: '/reportes', icon: ChartPieIcon },
 ];
+
 const teams = [
-  { id: 1, name: 'Algo mas', href: '#', initial: 'A', current: false },
-  { id: 2, name: 'Otra cosa', href: '#', initial: 'O', current: false },
-  { id: 3, name: 'Quien sabe', href: '#', initial: 'Q', current: false },
+  { id: 1, name: 'Algo mas', href: '#', initial: 'A' },
+  { id: 2, name: 'Otra cosa', href: '#', initial: 'O' },
+  { id: 3, name: 'Quien sabe', href: '#', initial: 'Q' },
 ];
-const userNavigation = [
-  { name: 'Your profile', href: '#' },
-  // { name: 'Sign out', href: '#' },
-];
+
+const userNavigation = [{ name: 'Your profile', href: '#' }];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -54,17 +40,17 @@ function classNames(...classes) {
 
 export default function Dashboard({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isCurrentRoute = (href) => {
+    if (href === '/') {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
       <div>
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
@@ -118,7 +104,7 @@ export default function Dashboard({ children }) {
                       </button>
                     </div>
                   </Transition.Child>
-                  {/* Sidebar component, swap this element with another sidebar if you like */}
+
                   <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
                     <div className="flex h-16 shrink-0 items-center">
                       <img
@@ -136,7 +122,7 @@ export default function Dashboard({ children }) {
                                 <a
                                   href={item.href}
                                   className={classNames(
-                                    item.current
+                                    isCurrentRoute(item.href)
                                       ? 'bg-gray-50 text-indigo-600'
                                       : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
                                     'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
@@ -144,7 +130,7 @@ export default function Dashboard({ children }) {
                                 >
                                   <item.icon
                                     className={classNames(
-                                      item.current
+                                      isCurrentRoute(item.href)
                                         ? 'text-indigo-600'
                                         : 'text-gray-400 group-hover:text-indigo-600',
                                       'h-6 w-6 shrink-0'
@@ -167,7 +153,7 @@ export default function Dashboard({ children }) {
                                 <a
                                   href={team.href}
                                   className={classNames(
-                                    team.current
+                                    isCurrentRoute(team.href)
                                       ? 'bg-gray-50 text-indigo-600'
                                       : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
                                     'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
@@ -175,7 +161,7 @@ export default function Dashboard({ children }) {
                                 >
                                   <span
                                     className={classNames(
-                                      team.current
+                                      isCurrentRoute(team.href)
                                         ? 'text-indigo-600 border-indigo-600'
                                         : 'text-gray-400 border-gray-300 group-hover:border-indigo-600 group-hover:text-indigo-600',
                                       'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white'
@@ -210,9 +196,7 @@ export default function Dashboard({ children }) {
           </Dialog>
         </Transition.Root>
 
-        {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-          {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-300 bg-white px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <img
@@ -230,7 +214,7 @@ export default function Dashboard({ children }) {
                         <a
                           href={item.href}
                           className={classNames(
-                            item.current
+                            isCurrentRoute(item.href)
                               ? 'bg-gray-50 text-indigo-600'
                               : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
                             'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
@@ -238,7 +222,7 @@ export default function Dashboard({ children }) {
                         >
                           <item.icon
                             className={classNames(
-                              item.current
+                              isCurrentRoute(item.href)
                                 ? 'text-indigo-600'
                                 : 'text-gray-400 group-hover:text-indigo-600',
                               'h-6 w-6 shrink-0'
@@ -261,7 +245,7 @@ export default function Dashboard({ children }) {
                         <a
                           href={team.href}
                           className={classNames(
-                            team.current
+                            isCurrentRoute(team.href)
                               ? 'bg-gray-50 text-indigo-600'
                               : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
                             'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
@@ -269,7 +253,7 @@ export default function Dashboard({ children }) {
                         >
                           <span
                             className={classNames(
-                              team.current
+                              isCurrentRoute(team.href)
                                 ? 'text-indigo-600 border-indigo-600'
                                 : 'text-gray-400 border-gray-300 group-hover:border-indigo-600 group-hover:text-indigo-600',
                               'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white'
