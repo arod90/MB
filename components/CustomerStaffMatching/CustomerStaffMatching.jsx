@@ -2,6 +2,15 @@
 import React, { useMemo } from 'react';
 import { useClientContext } from '@/context/ClientContext';
 
+const MetricCard = ({ title, children }) => {
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
+      {children}
+    </div>
+  );
+};
+
 const CustomerStaffMatching = () => {
   const { clients } = useClientContext();
 
@@ -54,7 +63,7 @@ const CustomerStaffMatching = () => {
               perf.transactions > 0 ? perf.totalSales / perf.transactions : 0,
           }))
           .sort((a, b) => b.averageTicket - a.averageTicket)
-          .slice(0, 3);
+          .slice(0, 5);
 
         const sortedProducts = Object.entries(allPurchases)
           .map(([product, quantity]) => ({ product, quantity }))
@@ -109,22 +118,24 @@ const CustomerStaffMatching = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="p-2 sm:p-6">
+      <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
         <h2 className="text-xl font-bold mb-6">
           Asignación Recomendada de Personal
         </h2>
-        <div className="space-y-8 max-h-[800px] overflow-y-auto">
+
+        <div className="space-y-6 max-h-[800px] overflow-y-auto">
           {Object.entries(groupedCustomers).map(([status, customers]) => (
             <div key={status} className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-700 sticky top-0 bg-white py-2">
                 Clientes {status} ({customers.length})
               </h3>
+
               <div className="grid gap-4">
                 {customers.map((customer) => (
                   <div
                     key={customer.id}
-                    className={`border rounded-lg p-4 h-[250px] ${
+                    className={`border rounded-lg p-4 ${
                       customer.status === 'VIP'
                         ? 'border-yellow-400 bg-yellow-50'
                         : customer.status === 'Regular'
@@ -132,70 +143,67 @@ const CustomerStaffMatching = () => {
                         : 'border-gray-200 bg-gray-50'
                     }`}
                   >
-                    <div className="flex justify-between items-start gap-4 h-full">
-                      <div className="flex-1 flex flex-col h-full">
-                        {/* Fixed height for customer info */}
-                        <div className="mb-3">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-md font-semibold">
-                              {customer.name}
-                            </h3>
-                            <span
-                              className={`px-2 py-0.5 rounded-full text-xs ${
-                                customer.status === 'VIP'
-                                  ? 'bg-yellow-200 text-yellow-800'
-                                  : customer.status === 'Regular'
-                                  ? 'bg-blue-200 text-blue-800'
-                                  : 'bg-gray-200 text-gray-800'
-                              }`}
-                            >
-                              {customer.status}
-                            </span>
+                    {/* Customer Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-4">
+                      <h3 className="text-md font-semibold">{customer.name}</h3>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs w-fit ${
+                          customer.status === 'VIP'
+                            ? 'bg-yellow-200 text-yellow-800'
+                            : customer.status === 'Regular'
+                            ? 'bg-blue-200 text-blue-800'
+                            : 'bg-gray-200 text-gray-800'
+                        }`}
+                      >
+                        {customer.status}
+                      </span>
+                    </div>
+
+                    {/* Customer Stats */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm mb-4">
+                      <div>Visitas totales: {customer.visits}</div>
+                      <div>
+                        Total consumido:{' '}
+                        {new Intl.NumberFormat('es-EC', {
+                          style: 'currency',
+                          currency: 'USD',
+                        }).format(customer.totalSpent)}
+                      </div>
+                      <div>
+                        Promedio por consumo:{' '}
+                        {new Intl.NumberFormat('es-EC', {
+                          style: 'currency',
+                          currency: 'USD',
+                        }).format(customer.averageTicket)}
+                      </div>
+                    </div>
+
+                    {/* Content Sections */}
+                    <div className="flex flex-col lg:flex-row gap-4">
+                      {/* Purchase History */}
+                      {customer.purchaseHistory.length > 0 && (
+                        <div className="flex-1 bg-white rounded-lg p-3 shadow-sm">
+                          <div className="font-medium text-sm text-gray-700 mb-2">
+                            Historial de Productos
                           </div>
-                          <div className="mt-1 grid grid-cols-3 gap-2 text-sm">
-                            <div>Visitas totales: {customer.visits}</div>
-                            <div>
-                              Total consumido:{' '}
-                              {new Intl.NumberFormat('es-EC', {
-                                style: 'currency',
-                                currency: 'USD',
-                              }).format(customer.totalSpent)}
-                            </div>
-                            <div>
-                              Promedio por consumo:{' '}
-                              {new Intl.NumberFormat('es-EC', {
-                                style: 'currency',
-                                currency: 'USD',
-                              }).format(customer.averageTicket)}
-                            </div>
+                          <div className="max-h-[200px] overflow-y-auto">
+                            {customer.purchaseHistory.map((item, idx) => (
+                              <div key={idx} className="text-xs py-0.5">
+                                • {item.quantity}x {item.product}
+                              </div>
+                            ))}
                           </div>
                         </div>
+                      )}
 
-                        {/* Scrollable purchase history taking remaining height */}
-                        {customer.purchaseHistory.length > 0 && (
-                          <div className="flex-1 bg-white rounded-lg p-3 shadow-sm overflow-hidden">
-                            <div className="font-medium text-sm text-gray-700 mb-2">
-                              Historial de Productos
-                            </div>
-                            <div className="overflow-y-auto h-[calc(100%-2rem)]">
-                              {customer.purchaseHistory.map((item, idx) => (
-                                <div key={idx} className="text-xs py-0.5">
-                                  • {item.quantity}x {item.product}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Staff Recommendations with fixed height and scrollable content */}
+                      {/* Staff Recommendations */}
                       {customer.topStaff.length > 0 && (
-                        <div className="flex-1 h-full">
-                          <div className="bg-white rounded-lg p-3 shadow-sm h-full flex flex-col">
+                        <div className="flex-1">
+                          <div className="bg-white rounded-lg p-3 shadow-sm">
                             <h4 className="text-sm font-semibold text-green-700 mb-2">
                               Personal Recomendado
                             </h4>
-                            <div className="overflow-y-auto flex-1">
+                            <div className="max-h-[200px] overflow-y-auto">
                               {customer.topStaff.map((staff, index) => (
                                 <div key={staff.name} className="mb-3">
                                   <div className="font-medium text-sm">

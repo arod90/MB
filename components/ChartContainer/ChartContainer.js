@@ -14,30 +14,37 @@ import {
   PieChart,
   Pie,
   Cell,
+  ResponsiveContainer,
 } from 'recharts';
 
-const MetricCard = ({ title, children }) => (
-  <div className="bg-white rounded-lg shadow-lg p-6 h-[400px] flex flex-col">
-    <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
-    <div className="flex-1 overflow-auto">{children}</div>
+const MetricCard = ({ title, children, className = '' }) => (
+  <div className={`bg-white rounded-lg shadow-lg p-4 lg:p-6 ${className}`}>
+    <h3 className="text-base lg:text-lg font-semibold text-gray-800 mb-4">
+      {title}
+    </h3>
+    <div className="h-[calc(100%-2rem)] overflow-auto">{children}</div>
   </div>
 );
 
 const CustomerList = ({ title, count, customers }) => (
   <div className="mt-4">
-    <div className="flex items-center justify-between mb-2 text-sm">
-      <span className="text-gray-600 font-medium">{title}</span>
+    <div className="flex items-center justify-between mb-2">
+      <span className="text-xs lg:text-sm text-gray-600 font-medium">
+        {title}
+      </span>
       <span className="bg-gray-100 px-2 py-1 rounded-full text-xs font-semibold">
         {count}
       </span>
     </div>
-    <div className="overflow-y-auto">
+    <div className="overflow-y-auto max-h-[150px] lg:max-h-[200px]">
       <table className="w-full">
         <tbody>
           {customers.map((customer, index) => (
             <tr key={index} className="border-b hover:bg-gray-50">
-              <td className="py-1.5 text-sm pl-2">{customer.name}</td>
-              <td className="py-1.5 text-sm text-right pr-2">
+              <td className="py-1.5 text-xs lg:text-sm pl-2">
+                {customer.name}
+              </td>
+              <td className="py-1.5 text-xs lg:text-sm text-right pr-2">
                 {customer.visits} visitas
               </td>
             </tr>
@@ -61,7 +68,6 @@ const DashboardLayout = () => {
 
   const calculateMetrics = () => {
     if (!clients?.length) return null;
-
     const metrics = {
       totalRevenue: 0,
       productSales: {},
@@ -70,9 +76,7 @@ const DashboardLayout = () => {
         regular: { count: 0, clients: [] },
         vip: { count: 0, clients: [] },
       },
-      demographics: {
-        age: {},
-      },
+      demographics: { age: {} },
       topSpenders: [],
       productMix: {
         bebidas: { count: 0, revenue: 0 },
@@ -84,7 +88,6 @@ const DashboardLayout = () => {
 
     clients.forEach((client) => {
       if (!client?.Consumos_general) return;
-
       const clientInfo = {
         name: `${client.Nombre} ${client.Apellido}`,
         visits: client.NumIngresos,
@@ -115,9 +118,7 @@ const DashboardLayout = () => {
 
       // Process consumption data
       client.Consumos_general.forEach((consumo) => {
-        // Handle missing or invalid Monto
         if (!consumo?.Monto) return;
-
         const amount = parseFloat(consumo.Monto);
         if (isNaN(amount)) return;
 
@@ -142,7 +143,6 @@ const DashboardLayout = () => {
         // Process each item in the consumption
         consumo.Detalles?.forEach((detalle) => {
           if (!detalle?.Producto || !detalle?.Cantidad) return;
-
           const producto = detalle.Producto;
           const cantidad = parseInt(detalle.Cantidad);
           if (isNaN(cantidad)) return;
@@ -198,7 +198,7 @@ const DashboardLayout = () => {
 
     // Sort top spenders
     metrics.topSpenders.sort((a, b) => b.total - a.total);
-    metrics.topSpenders = metrics.topSpenders.slice(0, 10);
+    metrics.topSpenders = metrics.topSpenders.slice(0, 14);
 
     // Calculate revenue timeline
     metrics.revenueTimeline = Object.entries(metrics.revenueByDate)
@@ -210,26 +210,12 @@ const DashboardLayout = () => {
       }))
       .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Verify totals
-    console.log('Revenue Verification:', {
-      totalRevenue: metrics.totalRevenue.toFixed(2),
-      bebidasRevenue: metrics.productMix.bebidas.revenue.toFixed(2),
-      comidasRevenue: metrics.productMix.comidas.revenue.toFixed(2),
-      sumOfCategories: (
-        metrics.productMix.bebidas.revenue + metrics.productMix.comidas.revenue
-      ).toFixed(2),
-      difference: (
-        metrics.totalRevenue -
-        (metrics.productMix.bebidas.revenue +
-          metrics.productMix.comidas.revenue)
-      ).toFixed(2),
-    });
-
+    console.log('Calculated metrics:', metrics);
     return metrics;
   };
 
   const metrics = calculateMetrics();
-  if (!metrics) return <div></div>;
+  if (!metrics) return null;
 
   const formatCurrency = (value) =>
     new Intl.NumberFormat('es-EC', {
@@ -238,15 +224,17 @@ const DashboardLayout = () => {
     }).format(value);
 
   return (
-    <div className="grid grid-cols-12 gap-6 p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 p-2 lg:p-6">
       {/* Key Metrics with Customer Lists */}
-      <div className="col-span-12 lg:col-span-5">
-        <MetricCard title="Métricas Clave">
+      <div className="md:col-span-2 xl:col-span-5 h-[400px] lg:h-[450px]">
+        <MetricCard title="Métricas Clave" className="h-full">
           <div className="space-y-4">
-            <div className="flex justify-between items-center mb-6 pb-4 border-b">
-              <div>
-                <p className="text-gray-600">Ingresos totales de clientes</p>
-                <p className="text-2xl font-bold">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 pb-4 border-b">
+              <div className="mb-4 lg:mb-0">
+                <p className="text-xs lg:text-sm text-gray-600">
+                  Ingresos totales de clientes
+                </p>
+                <p className="text-xl lg:text-2xl font-bold">
                   {formatCurrency(metrics.totalRevenue)}
                 </p>
               </div>
@@ -269,8 +257,7 @@ const DashboardLayout = () => {
                 </div>
               </div>
             </div>
-
-            <div className="space-y-6">
+            <div className="space-y-6 overflow-y-auto">
               <CustomerList
                 title="Clientes VIP"
                 count={metrics.customerTypes.vip.count}
@@ -292,77 +279,94 @@ const DashboardLayout = () => {
       </div>
 
       {/* Age Demographics */}
-      {/* TODO! invertir leyenda */}
-      <div className="col-span-12 lg:col-span-3">
-        <MetricCard title="Edad de los Clientes">
-          <PieChart width={280} height={280}>
-            <Pie
-              data={Object.entries(metrics.demographics.age).map(
-                ([name, value]) => ({
-                  name: value.toString(), // Show the count in the chart
-                  value: value,
-                  ageRange: name, // Keep age range for legend
-                })
-              )}
-              cx="50%"
-              cy="50%"
-              outerRadius={70}
-              fill="#8884d8"
-              dataKey="value"
-              label={({ name }) => name} // Display count in the chart
-            >
-              {Object.entries(metrics.demographics.age).map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
+      <div className="md:col-span-1 xl:col-span-3 h-[400px] lg:h-[450px]">
+        <MetricCard title="Edad de los Clientes" className="h-full">
+          <div style={{ width: '100%', height: '100%', padding: '0.5rem' }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie
+                  data={Object.entries(metrics.demographics.age).map(
+                    ([name, value]) => ({
+                      name: value.toString(),
+                      value: value,
+                      ageRange: name,
+                    })
+                  )}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius="80%"
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name }) => name}
+                >
+                  {Object.entries(metrics.demographics.age).map(
+                    (entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    )
+                  )}
+                </Pie>
+                <Tooltip
+                  contentStyle={{ fontSize: '12px' }}
+                  itemStyle={{ fontSize: '12px' }}
                 />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend formatter={(value, entry) => entry.payload.ageRange} />
-          </PieChart>
+                <Legend
+                  formatter={(value, entry) => entry.payload.ageRange}
+                  wrapperStyle={{ fontSize: '12px' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </MetricCard>
       </div>
 
       {/* Product Mix */}
-      <div className="col-span-12 lg:col-span-4">
-        <MetricCard title="Mix de Consumo">
-          <PieChart width={300} height={300}>
-            <Pie
-              data={Object.entries(metrics.productMix).map(
-                ([name, { revenue }]) => ({
-                  name: name === 'bebidas' ? 'Bebidas' : 'Alimentos',
-                  value: revenue,
-                })
-              )}
-              cx="50%"
-              cy="50%"
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-              label={({ value }) => formatCurrency(value)}
-            >
-              {Object.entries(metrics.productMix).map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
+      <div className="md:col-span-1 xl:col-span-4 h-[400px] lg:h-[450px]">
+        <MetricCard title="Mix de Consumo" className="h-full">
+          <div style={{ width: '100%', height: '100%', padding: '0.5rem' }}>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie
+                  data={Object.entries(metrics.productMix).map(
+                    ([name, { revenue }]) => ({
+                      name: name === 'bebidas' ? 'Bebidas' : 'Alimentos',
+                      value: revenue,
+                    })
+                  )}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius="80%"
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ value }) => formatCurrency(value)}
+                >
+                  {Object.entries(metrics.productMix).map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value) => formatCurrency(value)}
+                  contentStyle={{ fontSize: '12px' }}
+                  itemStyle={{ fontSize: '12px' }}
                 />
-              ))}
-            </Pie>
-            <Tooltip formatter={(value) => formatCurrency(value)} />
-            <Legend />
-          </PieChart>
+                <Legend wrapperStyle={{ fontSize: '12px' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </MetricCard>
       </div>
 
       {/* Products Chart */}
-      <div className="col-span-12 lg:col-span-6">
-        <MetricCard title="Productos más Vendidos">
-          <div className="h-full overflow-y-auto">
-            <div className="w-full flex justify-start">
+      <div className="md:col-span-2 xl:col-span-6 h-[400px] lg:h-[600px]">
+        <MetricCard title="Productos más Vendidos" className="h-full">
+          <div style={{ width: '100%', height: '100%' }}>
+            <ResponsiveContainer>
               <BarChart
-                width={500}
-                height={800}
                 data={Object.entries(metrics.productSales)
                   .sort(([, a], [, b]) => b - a)
                   .slice(0, 20)
@@ -372,15 +376,15 @@ const DashboardLayout = () => {
                     value,
                   }))}
                 layout="vertical"
-                margin={{ top: 5, right: 45, left: 120, bottom: 5 }}
+                margin={{ top: 5, right: 45, left: 5, bottom: 5 }}
               >
                 <XAxis type="number" fontSize={11} />
                 <YAxis
                   type="category"
                   dataKey="name"
-                  width={120}
+                  width={110}
                   interval={0}
-                  fontSize={11}
+                  fontSize={9}
                   tickLine={false}
                 />
                 <Tooltip
@@ -404,33 +408,40 @@ const DashboardLayout = () => {
                   )}
                 />
               </BarChart>
-            </div>
+            </ResponsiveContainer>
           </div>
         </MetricCard>
       </div>
-
       {/* Top Spenders */}
-      <div className="col-span-12 lg:col-span-6">
-        <MetricCard title="Mejores Clientes">
-          <div className="overflow-y-auto px-4">
+      <div className="md:col-span-2 xl:col-span-6 h-[400px] lg:h-[600px]">
+        <MetricCard title="Mejores Clientes" className="h-full">
+          <div className="h-full overflow-auto">
             <table className="min-w-full">
               <thead className="sticky top-0 bg-white">
                 <tr className="border-b">
-                  <th className="text-left py-2">Cliente</th>
-                  <th className="text-right py-2">Total Gastado</th>
-                  <th className="text-right py-2">Visitas</th>
-                  <th className="text-right py-2">Última Visita</th>
+                  <th className="text-left py-2 text-xs lg:text-sm">Cliente</th>
+                  <th className="text-right py-2 text-xs lg:text-sm">
+                    Total Gastado
+                  </th>
+                  <th className="text-right py-2 text-xs lg:text-sm">
+                    Visitas
+                  </th>
+                  <th className="text-right py-2 text-xs lg:text-sm">
+                    Última Visita
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {metrics.topSpenders.map((spender, index) => (
                   <tr key={index} className="border-b hover:bg-gray-50">
-                    <td className="py-2">{spender.name}</td>
-                    <td className="text-right">
+                    <td className="py-2 text-xs lg:text-sm">{spender.name}</td>
+                    <td className="text-right text-xs lg:text-sm">
                       {formatCurrency(spender.total)}
                     </td>
-                    <td className="text-right">{spender.visits}</td>
-                    <td className="text-right">
+                    <td className="text-right text-xs lg:text-sm">
+                      {spender.visits}
+                    </td>
+                    <td className="text-right text-xs lg:text-sm">
                       {new Date(spender.lastVisit).toLocaleDateString('es-ES', {
                         day: '2-digit',
                         month: '2-digit',
@@ -446,15 +457,13 @@ const DashboardLayout = () => {
       </div>
 
       {/* Revenue Trends Graph */}
-      <div className="col-span-12">
-        <MetricCard title="Tendencias de Consumo">
-          <div className="h-full flex flex-col">
-            <div className="flex-1">
+      <div className="md:col-span-2 xl:col-span-12 h-[300px] lg:h-[400px]">
+        <MetricCard title="Tendencias de Consumo" className="h-full">
+          <div style={{ width: '100%', height: '100%' }}>
+            <ResponsiveContainer>
               <LineChart
-                width={1100}
-                height={300}
                 data={metrics.revenueTimeline}
-                margin={{ top: 20, right: 30, left: 50, bottom: 20 }}
+                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
@@ -497,6 +506,7 @@ const DashboardLayout = () => {
                       year: 'numeric',
                     })
                   }
+                  contentStyle={{ fontSize: '12px' }}
                 />
                 <Legend
                   formatter={(value) =>
@@ -506,6 +516,7 @@ const DashboardLayout = () => {
                       ? 'Ticket Promedio'
                       : 'Transacciones'
                   }
+                  wrapperStyle={{ fontSize: '12px' }}
                 />
                 <Line
                   type="monotone"
@@ -524,10 +535,7 @@ const DashboardLayout = () => {
                   dot={false}
                 />
               </LineChart>
-            </div>
-            <div className="text-xs text-gray-500 mt-2 text-center">
-              Comparativa de ingresos y ticket promedio por día
-            </div>
+            </ResponsiveContainer>
           </div>
         </MetricCard>
       </div>
