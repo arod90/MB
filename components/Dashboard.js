@@ -6,25 +6,22 @@ import { Dialog, Menu, Transition } from '@headlessui/react';
 import {
   Bars3Icon,
   BellIcon,
-  CalendarIcon,
-  ChartPieIcon,
   Cog6ToothIcon,
-  DocumentDuplicateIcon,
-  FolderIcon,
   HomeIcon,
   UsersIcon,
   XMarkIcon,
-  CameraIcon,
+  CalendarDaysIcon,
+  LightBulbIcon,
+  ClipboardDocumentCheckIcon,
 } from '@heroicons/react/24/outline';
-import {
-  ChevronDownIcon,
-  MagnifyingGlassIcon,
-} from '@heroicons/react/20/solid';
+import { MagnifyingGlassIcon } from '@heroicons/react/20/solid';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: HomeIcon },
   { name: 'Clientes', href: '/clientes', icon: UsersIcon },
-  { name: 'Reportes', href: '/reportes', icon: ChartPieIcon },
+  { name: 'Historial', href: '/historial', icon: CalendarDaysIcon },
+  { name: 'Insights', href: '/insights', icon: LightBulbIcon },
+  { name: 'Reportes', href: '/reportes', icon: ClipboardDocumentCheckIcon },
 ];
 
 const teams = [
