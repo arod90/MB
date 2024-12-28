@@ -18,7 +18,9 @@ import {
 } from 'recharts';
 
 const MetricCard = ({ title, children, className = '' }) => (
-  <div className={`bg-white rounded-lg shadow-lg p-4 lg:p-6 ${className}`}>
+  <div
+    className={`bg-white rounded-lg shadow-lg p-4 lg:p-6 ${className} border border-gray-300`}
+  >
     <h3 className="text-base lg:text-lg font-semibold text-gray-800 mb-4">
       {title}
     </h3>
@@ -224,10 +226,10 @@ const DashboardLayout = () => {
     }).format(value);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 p-2 lg:p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 p-2 lg:p-6 bg-bgGray">
       {/* Key Metrics with Customer Lists */}
       <div className="md:col-span-2 xl:col-span-5 h-[400px] lg:h-[450px]">
-        <MetricCard title="Métricas Clave" className="h-full">
+        <MetricCard title="Métricas Clave" className="h-full ">
           <div className="space-y-4">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 pb-4 border-b">
               <div className="mb-4 lg:mb-0">

@@ -1,6 +1,7 @@
 'use client';
 import React, { useMemo } from 'react';
 import { useClientContext } from '@/context/ClientContext';
+import LoadingSpinner from '../LoadingSpinner';
 
 const MetricCard = ({ title, children }) => {
   return (
@@ -101,13 +102,7 @@ const CustomerStaffMatching = () => {
   }, [clients]);
 
   if (!clients || clients.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg text-gray-500">
-          Cargando datos de clientes...
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   // Group customers by status for display
@@ -118,7 +113,7 @@ const CustomerStaffMatching = () => {
   };
 
   return (
-    <div className="p-2 sm:p-6">
+    <div className="p-2 sm:p-6 bg-bgGray">
       <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
         <h2 className="text-xl font-bold mb-6">
           Asignación Recomendada de Personal
