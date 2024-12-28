@@ -303,9 +303,9 @@ const ReportsDashboard = () => {
                   checked={showCoverCharges}
                   onChange={setShowCoverCharges}
                   className={`${
-                    showCoverCharges ? 'bg-indigo-600' : 'bg-gray-200'
+                    showCoverCharges ? 'bg-gray-900/80' : 'bg-gray-200'
                   }
-                    relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2`}
+                    relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-900/80 focus:ring-offset-2`}
                 >
                   <span className="sr-only">Show cover charges</span>
                   <span
