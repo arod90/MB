@@ -207,7 +207,7 @@ export default function Dashboard({ children }) {
                 src="/icono6.png"
                 alt="Brown Sugar"
               />
-              <span className="text-xl font-semibold leading-6 text-gray-300">
+              <span className="text-xl font-mono leading-6 text-gray-300">
                 Brown Sugar
               </span>
             </div>

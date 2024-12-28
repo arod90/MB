@@ -29,7 +29,7 @@ const COLORS = [
 ];
 
 const MetricCard = ({ title, children }) => (
-  <div className="bg-white rounded-lg shadow-lg p-2 h-full flex flex-col">
+  <div className="bg-white rounded-lg shadow-lg p-2 h-full flex flex-col border border-gray-300">
     <h3 className="text-lg font-semibold text-gray-800 mb-2 px-2">{title}</h3>
     <div className="flex-1 overflow-hidden">{children}</div>
   </div>
