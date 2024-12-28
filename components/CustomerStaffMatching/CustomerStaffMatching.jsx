@@ -134,7 +134,7 @@ const CustomerStaffMatching = () => {
                       customer.status === 'VIP'
                         ? 'border-yellow-400 bg-yellow-50'
                         : customer.status === 'Regular'
-                        ? 'border-blue-300 bg-blue-50'
+                        ? 'border-green-300 bg-green-50'
                         : 'border-gray-200 bg-gray-50'
                     }`}
                   >
@@ -146,7 +146,7 @@ const CustomerStaffMatching = () => {
                           customer.status === 'VIP'
                             ? 'bg-yellow-200 text-yellow-800'
                             : customer.status === 'Regular'
-                            ? 'bg-blue-200 text-blue-800'
+                            ? 'bg-green-200 text-green-800'
                             : 'bg-gray-200 text-gray-800'
                         }`}
                       >
@@ -200,7 +200,7 @@ const CustomerStaffMatching = () => {
                             </h4>
                             <div className="max-h-[200px] overflow-y-auto">
                               {customer.topStaff.map((staff, index) => (
-                                <div key={staff.name} className="mb-3">
+                                <div key={staff.name} className="mb-4">
                                   <div className="font-medium text-sm">
                                     <span className="text-gray-500">
                                       {index + 1}.{' '}

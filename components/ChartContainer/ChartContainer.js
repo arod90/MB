@@ -41,16 +41,32 @@ const CustomerList = ({ title, count, customers }) => (
     <div className="overflow-y-auto max-h-[150px] lg:max-h-[200px]">
       <table className="w-full">
         <tbody>
-          {customers.map((customer, index) => (
-            <tr key={index} className="border-b hover:bg-gray-50">
-              <td className="py-1.5 text-xs lg:text-sm pl-2">
-                {customer.name}
-              </td>
-              <td className="py-1.5 text-xs lg:text-sm text-right pr-2">
-                {customer.visits} visitas
-              </td>
-            </tr>
-          ))}
+          {customers.map((customer, index) => {
+            // Determine status color based on visits
+            let statusColor;
+            if (customer.visits > 10) {
+              statusColor = 'bg-yellow-400'; // VIP
+            } else if (customer.visits >= 3) {
+              statusColor = 'bg-green-400'; // Regular
+            } else {
+              statusColor = 'bg-gray-200'; // New
+            }
+
+            return (
+              <tr key={index} className="border-b hover:bg-gray-50 relative">
+                <td className="py-1.5 text-xs lg:text-sm pl-2 flex items-center">
+                  <div
+                    className={`w-1 h-full absolute left-0 ${statusColor}`}
+                    style={{ top: 0 }}
+                  />
+                  <span className="ml-2">{customer.name}</span>
+                </td>
+                <td className="py-1.5 text-xs lg:text-sm text-right pr-2">
+                  {customer.visits} visitas
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -417,41 +433,65 @@ const DashboardLayout = () => {
       {/* Top Spenders */}
       <div className="md:col-span-2 xl:col-span-6 h-[400px] lg:h-[600px]">
         <MetricCard title="Mejores Clientes" className="h-full">
-          <div className="h-full overflow-auto">
+          <div className="h-full overflow-auto relative">
             <table className="min-w-full">
-              <thead className="sticky top-0 bg-white">
-                <tr className="border-b">
-                  <th className="text-left py-2 text-xs lg:text-sm">Cliente</th>
-                  <th className="text-right py-2 text-xs lg:text-sm">
+              <thead className="sticky top-0 bg-white z-20">
+                <tr className="border-b after:absolute after:left-0 after:right-0 after:bottom-0 after:w-full after:h-[1px] after:bg-gray-200">
+                  <th className="text-left py-2 text-xs lg:text-sm bg-white">
+                    Cliente
+                  </th>
+                  <th className="text-right py-2 text-xs lg:text-sm bg-white">
                     Total Gastado
                   </th>
-                  <th className="text-right py-2 text-xs lg:text-sm">
+                  <th className="text-right py-2 text-xs lg:text-sm bg-white">
                     Visitas
                   </th>
-                  <th className="text-right py-2 text-xs lg:text-sm">
+                  <th className="text-right py-2 text-xs lg:text-sm bg-white">
                     Última Visita
                   </th>
                 </tr>
               </thead>
-              <tbody>
-                {metrics.topSpenders.map((spender, index) => (
-                  <tr key={index} className="border-b hover:bg-gray-50">
-                    <td className="py-2 text-xs lg:text-sm">{spender.name}</td>
-                    <td className="text-right text-xs lg:text-sm">
-                      {formatCurrency(spender.total)}
-                    </td>
-                    <td className="text-right text-xs lg:text-sm">
-                      {spender.visits}
-                    </td>
-                    <td className="text-right text-xs lg:text-sm">
-                      {new Date(spender.lastVisit).toLocaleDateString('es-ES', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                      })}
-                    </td>
-                  </tr>
-                ))}
+              <tbody className="relative">
+                {metrics.topSpenders.map((spender, index) => {
+                  let statusColor;
+                  if (spender.visits > 10) {
+                    statusColor = 'bg-yellow-400';
+                  } else if (spender.visits >= 3) {
+                    statusColor = 'bg-green-400';
+                  } else {
+                    statusColor = 'bg-gray-200';
+                  }
+
+                  return (
+                    <tr
+                      key={index}
+                      className="border-b hover:bg-gray-50 relative"
+                    >
+                      <td className="py-2 text-xs lg:text-sm relative">
+                        <div
+                          className={`absolute left-0 top-0 ${statusColor} w-1 h-full`}
+                        />
+                        <span className="pl-3">{spender.name}</span>
+                      </td>
+                      <td className="text-right text-xs lg:text-sm pr-4">
+                        {formatCurrency(spender.total)}
+                      </td>
+                      <td className="text-right text-xs lg:text-sm pr-4">
+                        {spender.visits}
+                      </td>
+                      <td className="text-right text-xs lg:text-sm pr-4">
+                        {new Date(spender.lastVisit).toLocaleDateString(
+                          'es-ES',
+                          {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                          }
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
