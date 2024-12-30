@@ -18,6 +18,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import AgeDistributionChart from '../../components/AgeDistributionChart/AgeDistributionChart';
 import {
   BarChart,
   PieChart,
@@ -418,43 +419,43 @@ export function CivilStatusChart({ data, startDate, endDate }) {
   );
 }
 
-function AgeDistributionChart({ data }) {
-  const chartData = Object.entries(data).map(([range, value]) => ({
-    name: range,
-    value,
-    fill: 'hsl(var(--chart-1))',
-  }));
+// function AgeDistributionChart({ data }) {
+//   const chartData = Object.entries(data).map(([range, value]) => ({
+//     name: range,
+//     value,
+//     fill: 'hsl(var(--chart-1))',
+//   }));
 
-  const chartConfig = {
-    value: { label: 'Cantidad' },
-  };
+//   const chartConfig = {
+//     value: { label: 'Cantidad' },
+//   };
 
-  return (
-    <Card className="flex flex-col h-full">
-      <CardHeader>
-        <CardTitle>Distribución por Edad</CardTitle>
-        <CardDescription>Rangos de edad de clientes</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 flex items-center justify-center">
-        <ChartContainer config={chartConfig} className="h-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ left: 0, right: 30 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis dataKey="name" className="text-sm" />
-              <YAxis className="text-sm" />
-              <Bar
-                dataKey="value"
-                fill="hsl(var(--chart-1))"
-                radius={[4, 4, 0, 0]}
-              />
-              <ChartTooltip />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  );
-}
+//   return (
+//     <Card className="flex flex-col h-full">
+//       <CardHeader>
+//         <CardTitle>Distribución por Edad</CardTitle>
+//         <CardDescription>Rangos de edad de clientes</CardDescription>
+//       </CardHeader>
+//       <CardContent className="flex-1 flex items-center justify-center">
+//         <ChartContainer config={chartConfig} className="h-full">
+//           <ResponsiveContainer width="100%" height="100%">
+//             <BarChart data={chartData} margin={{ left: 0, right: 30 }}>
+//               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+//               <XAxis dataKey="name" className="text-sm" />
+//               <YAxis className="text-sm" />
+//               <Bar
+//                 dataKey="value"
+//                 fill="hsl(var(--chart-1))"
+//                 radius={[4, 4, 0, 0]}
+//               />
+//               <ChartTooltip />
+//             </BarChart>
+//           </ResponsiveContainer>
+//         </ChartContainer>
+//       </CardContent>
+//     </Card>
+//   );
+// }
 
 function ConsumptionChart({ data, showCoverCharges, setShowCoverCharges }) {
   const chartConfig = {
