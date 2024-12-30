@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { useClientContext } from '@/context/ClientContext';
 import {
   BarChart,
@@ -15,7 +15,10 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
+  Label,
 } from 'recharts';
+import MixConsumoPieChart from '../../components/MixConsumoPieChart/MixConsumoPieChart';
+import AgePieChart from '../../components/AgePieChart/AgePieChart';
 
 const MetricCard = ({ title, children, className = '' }) => (
   <div
@@ -75,14 +78,122 @@ const CustomerList = ({ title, count, customers }) => (
 
 const DashboardLayout = () => {
   const { clients } = useClientContext();
-  const COLORS = [
-    '#0088FE', // Bright Blue
-    '#00C49F', // Teal
-    '#3F6B8E', // Steel Blue
-    '#70A9FF', // Light Blue
-    '#1E88E5', // Material Blue
-    '#4DB6AC', // Light Teal w
+
+  // At the top of DashboardLayout.jsx, add these constants:
+  const EXCLUDED_KEYWORDS = [
+    'AP. MUSICAL',
+    'MUSICAL',
+    'AP MUSICAL',
+    'HOMBRES',
+    'MUJERES',
   ];
+
+  const BEBIDA_KEYWORDS = [
+    // Alcoholic Beverages
+    'BOT',
+    'SHOT',
+    'SINGLE',
+    'CERVEZA',
+    'MARTINI',
+    'NEGRONI',
+    'MULE',
+    'MOJITO',
+    'MARGARITA',
+    'CASILLERO DEL DIABLO',
+    'COPA',
+    'BLEND',
+    'WHISKY',
+    'VODKA',
+    'GIN',
+    'TEQUILA',
+    'RON',
+    'JAGER',
+    'ANTIOQUEÑO',
+    'BUCHANANS',
+    'CHIVAS',
+    'JACK',
+    'JOHNNIE',
+    'OLD PARR',
+    'FLOR DE CAÑA',
+    'ABUELO',
+    'BALLANTINE',
+    'JOSE CUERVO',
+    'CORRALEJO',
+    'DRAFT',
+    'STELLA',
+    'CORONA',
+    'CLUB',
+    'BEER',
+    'VINO',
+    'COPA',
+    'WINE',
+    'CALVET',
+    'SPRITZ',
+    'FERNET',
+    // Non-alcoholic beverages
+    'RED BULL',
+    'AGUA',
+    'COCA COLA',
+    'SPRITE',
+    'TONIC',
+    'GINGER BEER',
+    'ZERO',
+    'TWIST',
+    // Cocktails and Mixed Drinks
+    'CARAJILLO',
+    'COLLINS',
+    'SOUR',
+    'PALOMA',
+    'BLOODY MARY',
+    'MANHATTAN',
+    'OLD FASHIONED',
+    'PORNSTAR',
+    'BOURBON',
+    'COSMOPOLITAN',
+    'ESPRESSO',
+  ];
+
+  const ALIMENTO_KEYWORDS = [
+    'TOAST',
+    'TARTAR',
+    'CHIPS',
+    'PAPAS',
+    'FRITAS',
+    'LOMO',
+    'PORK',
+    'BELLY',
+    'FISH',
+    'TUNA',
+    'PULPO',
+    'LANGOSTINO',
+    'CAMARÓN',
+    'ANDEAN',
+    'BEEF',
+    'TRUFFLE',
+    'BROWNIE',
+    'DIP',
+    'ALCACHOFA',
+    'HAMBURGUESA',
+    'TACOS',
+    'DEEP FRIED',
+    'KYMONO',
+  ];
+
+  // Add this helper function before calculateMetrics
+  const categorizeProduct = (product) => {
+    const upperProduct = product.toUpperCase();
+
+    if (BEBIDA_KEYWORDS.some((keyword) => upperProduct.includes(keyword))) {
+      return 'bebidas';
+    }
+
+    if (ALIMENTO_KEYWORDS.some((keyword) => upperProduct.includes(keyword))) {
+      return 'comidas';
+    }
+
+    console.log('Uncategorized product:', product);
+    return 'otros';
+  };
 
   const calculateMetrics = () => {
     if (!clients?.length) return null;
@@ -102,6 +213,8 @@ const DashboardLayout = () => {
       },
       revenueByDate: {},
       ticketsByDate: {},
+      topAlimento: null,
+      topBebida: null,
     };
 
     clients.forEach((client) => {
@@ -161,9 +274,18 @@ const DashboardLayout = () => {
         // Process each item in the consumption
         consumo.Detalles?.forEach((detalle) => {
           if (!detalle?.Producto || !detalle?.Cantidad) return;
-          const producto = detalle.Producto;
+          const producto = detalle.Producto.trim();
           const cantidad = parseInt(detalle.Cantidad);
           if (isNaN(cantidad)) return;
+
+          // Skip excluded products
+          if (
+            EXCLUDED_KEYWORDS.some((keyword) =>
+              producto.toUpperCase().includes(keyword)
+            )
+          ) {
+            return;
+          }
 
           // Track product sales
           metrics.productSales[producto] =
@@ -172,21 +294,12 @@ const DashboardLayout = () => {
           // Calculate revenue for this item
           const itemRevenue = revenuePerItem * cantidad;
 
-          // Categorize products and add revenue
-          if (
-            producto.includes('BOT') ||
-            producto.includes('CERVEZA') ||
-            producto.includes('MARTINI') ||
-            producto.includes('NEGRONI') ||
-            producto.includes('SHOT') ||
-            producto.includes('SINGLE') ||
-            producto.includes('MULE') ||
-            producto.includes('MOJITO') ||
-            producto.includes('MARGARITA')
-          ) {
+          // Use the new categorization
+          const category = categorizeProduct(producto);
+          if (category === 'bebidas') {
             metrics.productMix.bebidas.count += cantidad;
             metrics.productMix.bebidas.revenue += itemRevenue;
-          } else {
+          } else if (category === 'comidas') {
             metrics.productMix.comidas.count += cantidad;
             metrics.productMix.comidas.revenue += itemRevenue;
           }
@@ -208,6 +321,47 @@ const DashboardLayout = () => {
         });
       }
     });
+
+    // Determine Top Alimento and Top Bebida
+
+    const determineProductCategory = (product) => {
+      const upperProduct = product.toUpperCase();
+
+      if (BEBIDA_KEYWORDS.some((keyword) => upperProduct.includes(keyword))) {
+        return 'bebidas';
+      }
+
+      if (ALIMENTO_KEYWORDS.some((keyword) => upperProduct.includes(keyword))) {
+        return 'comidas';
+      }
+
+      console.log('Uncategorized product:', product);
+      return 'otros';
+    };
+
+    metrics.topAlimento = { name: '', count: 0 };
+    metrics.topBebida = { name: '', count: 0 };
+
+    Object.entries(metrics.productSales).forEach(([product, count]) => {
+      const category = determineProductCategory(product);
+
+      if (category === 'bebidas') {
+        if (count > metrics.topBebida.count) {
+          metrics.topBebida = { name: product, count };
+        }
+      } else if (category === 'comidas') {
+        if (count > metrics.topAlimento.count) {
+          metrics.topAlimento = { name: product, count };
+        }
+      }
+    });
+
+    metrics.topAlimento = metrics.topAlimento.name
+      ? metrics.topAlimento
+      : { name: 'N/A', count: 0 };
+    metrics.topBebida = metrics.topBebida.name
+      ? metrics.topBebida
+      : { name: 'N/A', count: 0 };
 
     // Sort customer lists
     Object.values(metrics.customerTypes).forEach((type) => {
@@ -298,85 +452,12 @@ const DashboardLayout = () => {
 
       {/* Age Demographics */}
       <div className="md:col-span-1 xl:col-span-3 h-[400px] lg:h-[450px]">
-        <MetricCard title="Edad de los Clientes" className="h-full">
-          <div style={{ width: '100%', height: '100%', padding: '0.5rem' }}>
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={Object.entries(metrics.demographics.age).map(
-                    ([name, value]) => ({
-                      name: value.toString(),
-                      value: value,
-                      ageRange: name,
-                    })
-                  )}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius="80%"
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name }) => name}
-                >
-                  {Object.entries(metrics.demographics.age).map(
-                    (entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    )
-                  )}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ fontSize: '12px' }}
-                  itemStyle={{ fontSize: '12px' }}
-                />
-                <Legend
-                  formatter={(value, entry) => entry.payload.ageRange}
-                  wrapperStyle={{ fontSize: '12px' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </MetricCard>
+        <AgePieChart />
       </div>
 
       {/* Product Mix */}
       <div className="md:col-span-1 xl:col-span-4 h-[400px] lg:h-[450px]">
-        <MetricCard title="Mix de Consumo" className="h-full">
-          <div style={{ width: '100%', height: '100%', padding: '0.5rem' }}>
-            <ResponsiveContainer>
-              <PieChart>
-                <Pie
-                  data={Object.entries(metrics.productMix).map(
-                    ([name, { revenue }]) => ({
-                      name: name === 'bebidas' ? 'Bebidas' : 'Alimentos',
-                      value: revenue,
-                    })
-                  )}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius="80%"
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ value }) => formatCurrency(value)}
-                >
-                  {Object.entries(metrics.productMix).map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) => formatCurrency(value)}
-                  contentStyle={{ fontSize: '12px' }}
-                  itemStyle={{ fontSize: '12px' }}
-                />
-                <Legend wrapperStyle={{ fontSize: '12px' }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </MetricCard>
+        <MixConsumoPieChart metrics={metrics} />
       </div>
 
       {/* Products Chart */}
