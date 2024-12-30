@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { format, subDays, isThursday, isFriday, isSaturday } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -20,22 +21,181 @@ import {
 import {
   BarChart,
   PieChart,
-  LineChart,
   Bar,
   Pie,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   Label,
   Cell,
   LabelList,
 } from 'recharts';
 import useWindowSize from '@/hooks/useWindowSize';
-import { TrendingUp } from 'lucide-react';
+// import { TrendingUp } from 'lucide-react';
+
+// Trend calculation utility function
+function calculateTrendInfo(data, startDate, endDate) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  // Helper function to calculate total from data
+  const calculateTotal = (data) => {
+    if (!data || typeof data !== 'object') return 0;
+    return Object.values(data).reduce(
+      (sum, value) => sum + (typeof value === 'number' ? value : 0),
+      0
+    );
+  };
+
+  // Calculate change percentage
+  const calculateChange = (current, previous) => {
+    if (!previous || previous === 0) return null;
+    return ((current - previous) / previous) * 100;
+  };
+
+  // Helper to format "arriba/abajo por X%" with correct color
+  const formatChangeSpan = (change, label) => {
+    if (change === null) return null;
+    const direction = change >= 0 ? 'arriba' : 'abajo';
+    const colorClass = change >= 0 ? 'text-green-600' : 'text-red-600';
+    const absChange = Math.abs(change).toFixed(1);
+    return `${label} <span class="${colorClass}">${direction} por ${absChange}%</span>`;
+  };
+
+  // Check if it's a calendar month
+  const isCalendarMonth =
+    start.getDate() === 1 &&
+    end.getDate() ===
+      new Date(end.getFullYear(), end.getMonth() + 1, 0).getDate() &&
+    start.getMonth() === end.getMonth();
+
+  // Check if it's any complete week (7 days)
+  const isWeek = end - start === 6 * 24 * 60 * 60 * 1000; // exactly 7 days
+
+  // Check if it's a calendar year
+  const isCalendarYear =
+    start.getMonth() === 0 &&
+    start.getDate() === 1 &&
+    end.getMonth() === 11 &&
+    end.getDate() === 31 &&
+    start.getFullYear() === end.getFullYear();
+
+  // Decide the "period type" if any
+  let periodType = null;
+  if (isCalendarMonth) periodType = 'mes';
+  if (isWeek) periodType = 'semana';
+  if (isCalendarYear) periodType = 'año';
+
+  // Build the bottom line if we have a known period and a previous period
+  const buildBottomLine = () => {
+    if (!periodType) return null; // not a "calendar" period
+    if (!data.previousPeriod) return null; // no previous data
+    return `Comparado con  ${periodType} anterior`;
+  };
+
+  // If we don’t have a previous period or not a calendar period, just show total
+  if (!periodType || !data.previousPeriod) {
+    return {
+      topLine: `Total del período: ${calculateTotal(data)}`,
+      bottomLine:
+        periodType && !data.previousPeriod
+          ? `No hay datos de la ${periodType} anterior`
+          : 'Selecciona un mes, semana o año completo para ver comparaciones',
+      isPositive: null,
+    };
+  }
+
+  // ----------------------------------------------------------------
+  //        GENDER DISTRIBUTION
+  // ----------------------------------------------------------------
+  if ('m' in data) {
+    const currentTotal = calculateTotal(data);
+    const previousTotal = calculateTotal(data.previousPeriod);
+
+    const totalChange = calculateChange(currentTotal, previousTotal);
+    const menChange = calculateChange(data.m || 0, data.previousPeriod?.m || 0);
+    const womenChange = calculateChange(
+      data.f || 0,
+      data.previousPeriod?.f || 0
+    );
+
+    // Build top line:
+    // e.g.: "Número de clientes arriba por X% • Hombres arriba por X% • Mujeres abajo por X%"
+    let parts = [];
+    const totalSpan = formatChangeSpan(totalChange, 'Número de clientes');
+    if (totalSpan) parts.push(totalSpan);
+    const menSpan = formatChangeSpan(menChange, 'Hombres');
+    if (menSpan) parts.push(menSpan);
+    const womenSpan = formatChangeSpan(womenChange, 'Mujeres');
+    if (womenSpan) parts.push(womenSpan);
+
+    const topLine =
+      parts.length > 0
+        ? parts.join(' <br/> ')
+        : `Total del período: ${currentTotal}`; // fallback
+
+    return {
+      topLine,
+      bottomLine: buildBottomLine() || '',
+      isPositive: totalChange >= 0,
+    };
+  }
+
+  // ----------------------------------------------------------------
+  //        CIVIL STATUS
+  // ----------------------------------------------------------------
+  if (
+    Object.keys(data).some((key) =>
+      ['soltero', 'casado', 'divorciado'].includes(key)
+    )
+  ) {
+    const currentTotal = calculateTotal(data);
+    const previousTotal = calculateTotal(data.previousPeriod);
+    const totalChange = calculateChange(currentTotal, previousTotal);
+
+    // Build top line with changes for soltero, casado, divorciado
+    // If a certain key doesn't exist in data, skip it
+    let parts = [];
+
+    // We'll look for known keys, but you can adapt as needed
+    const statuses = ['soltero', 'casado', 'divorciado'];
+    statuses.forEach((statusKey) => {
+      if (statusKey in data) {
+        const statusChange = calculateChange(
+          data[statusKey] || 0,
+          data.previousPeriod?.[statusKey] || 0
+        );
+        const label =
+          statusKey.charAt(0).toUpperCase() + statusKey.slice(1) + 's'; // Solteros, Casados, Divorciados
+        const statusSpan = formatChangeSpan(statusChange, label);
+        if (statusSpan) parts.push(statusSpan);
+      }
+    });
+
+    const topLine =
+      parts.length > 0
+        ? parts.join(' <br/> ')
+        : `Total del período: ${currentTotal}`; // fallback
+
+    return {
+      topLine,
+      bottomLine: buildBottomLine() || '',
+      isPositive: totalChange >= 0,
+    };
+  }
+
+  // ----------------------------------------------------------------
+  // DEFAULT / NO MATCH
+  // ----------------------------------------------------------------
+  return {
+    topLine: `Total del período: ${calculateTotal(data)}`,
+    bottomLine:
+      'Selecciona un mes, semana o año completo para ver comparaciones',
+    isPositive: null,
+  };
+}
 
 const TruncateYAxisTick = ({ x, y, payload }) => {
   const labelCutoff = 12;
@@ -44,7 +204,6 @@ const TruncateYAxisTick = ({ x, y, payload }) => {
     originalText.length > labelCutoff
       ? originalText.substring(0, labelCutoff - 1) + '…'
       : originalText;
-
   return (
     <g transform={`translate(${x},${y})`}>
       <text
@@ -61,17 +220,19 @@ const TruncateYAxisTick = ({ x, y, payload }) => {
   );
 };
 
-/* ------------------------------------------------------------------
-   Example: GenderDistributionChart
-   Key layout changes: h-full + flex-col
-------------------------------------------------------------------- */
-export function GenderDistributionChart({ data }) {
-  const chartData = Object.entries(data).map(([key, value]) => ({
+export function GenderDistributionChart({ data, startDate, endDate }) {
+  const { previousPeriod, ...currentData } = data;
+
+  const chartData = Object.entries(currentData).map(([key, value]) => ({
     name: key === 'm' ? 'Masculino' : 'Femenino',
     value,
     fill: key === 'm' ? 'hsl(var(--chart-1))' : 'hsl(var(--chart-2))',
   }));
+
   const totalCount = chartData.reduce((acc, curr) => acc + curr.value, 0);
+
+  // Use the updated function
+  const trendInfo = calculateTrendInfo(data, startDate, endDate);
 
   const chartConfig = {
     value: { label: 'Total' },
@@ -83,10 +244,8 @@ export function GenderDistributionChart({ data }) {
     <Card className="flex flex-col h-full">
       <CardHeader className="pb-0">
         <CardTitle>Distribución por Género</CardTitle>
-        <CardDescription>Año 2024</CardDescription>
+        <CardDescription>Datos del período seleccionado</CardDescription>
       </CardHeader>
-
-      {/* Let the card content stretch */}
       <CardContent className="flex-1 flex items-center justify-center pb-0">
         <ChartContainer config={chartConfig} className="w-full h-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -137,76 +296,49 @@ export function GenderDistributionChart({ data }) {
         </ChartContainer>
       </CardContent>
 
+      {/* Footer: top line (bold, can contain HTML) + bottom line (muted) */}
       <CardFooter className="flex-col gap-2 text-sm items-center text-center">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month
-          <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Datos de género recopilados durante el último año
+        {/* topLine as bold */}
+        <div
+          className="font-medium leading-none"
+          // Use "dangerouslySetInnerHTML" since topLine might contain <span> tags
+          dangerouslySetInnerHTML={{ __html: trendInfo.topLine }}
+        />
+        {/* If isPositive is not null, show arrow */}
+        {/* {trendInfo.isPositive !== null && (
+          <TrendingUp
+            className={`h-4 w-4 ${
+              !trendInfo.isPositive
+                ? 'rotate-180 text-red-600'
+                : 'text-green-600'
+            }`}
+          />
+        )} */}
+
+        {/* bottomLine as smaller text */}
+        <div className="leading-none text-muted-foreground text-sm">
+          {trendInfo.bottomLine}
         </div>
       </CardFooter>
     </Card>
   );
 }
 
-/* ------------------------------------------------------------------
-   Example: AgeDistributionChart
-   Same approach: flex-col h-full
-------------------------------------------------------------------- */
-function AgeDistributionChart({ data }) {
-  const chartData = Object.entries(data).map(([range, value]) => ({
-    name: range,
-    value,
-    fill: 'hsl(var(--chart-1))',
-  }));
+export function CivilStatusChart({ data, startDate, endDate }) {
+  // Extract just the civil status data without the previousPeriod
+  const { previousPeriod, ...currentData } = data;
 
-  const chartConfig = {
-    value: { label: 'Cantidad' },
-  };
-
-  return (
-    <Card className="flex flex-col h-full">
-      <CardHeader>
-        <CardTitle>Distribución por Edad</CardTitle>
-        <CardDescription>Rangos de edad de clientes</CardDescription>
-      </CardHeader>
-
-      <CardContent className="flex-1 flex items-center justify-center">
-        <ChartContainer config={chartConfig} className="h-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ left: 0, right: 30 }}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-              <XAxis dataKey="name" className="text-sm" />
-              <YAxis className="text-sm" />
-              <Bar
-                dataKey="value"
-                fill="hsl(var(--chart-1))"
-                radius={[4, 4, 0, 0]}
-              />
-              <ChartTooltip />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+  const chartData = Object.entries(currentData).map(
+    ([status, value], index) => ({
+      name: status.charAt(0).toUpperCase() + status.slice(1),
+      value,
+      fill: `hsl(var(--chart-${(index % 4) + 1}))`,
+    })
   );
-}
-
-/* ------------------------------------------------------------------
-   Example: CivilStatusChart
-   Notice we remove pixel heights, using flex-1 where needed
-------------------------------------------------------------------- */
-export function CivilStatusChart({ data }) {
-  // Example usage...
-  const chartData = Object.entries(data).map(([status, value], index) => ({
-    name: status.charAt(0).toUpperCase() + status.slice(1),
-    value,
-    // You can generate fill color dynamically or statically
-    fill: `hsl(var(--chart-${(index % 4) + 1}))`,
-  }));
 
   const totalCount = chartData.reduce((acc, curr) => acc + curr.value, 0);
+  const trendInfo = calculateTrendInfo(data, startDate, endDate);
+
   const chartConfig = {
     value: { label: 'Total' },
   };
@@ -215,9 +347,8 @@ export function CivilStatusChart({ data }) {
     <Card className="flex flex-col h-full">
       <CardHeader className="pb-0">
         <CardTitle>Estado Civil</CardTitle>
-        <CardDescription>Distribución por estado civil</CardDescription>
+        <CardDescription>Datos del período seleccionado</CardDescription>
       </CardHeader>
-
       <CardContent className="flex-1 flex items-center justify-center pb-0">
         <ChartContainer config={chartConfig} className="w-full h-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -264,40 +395,73 @@ export function CivilStatusChart({ data }) {
           </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
-
       <CardFooter className="flex-col gap-2 text-sm items-center text-center">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending down by 3% this month
-          {/* You can flip the icon */}
-          <TrendingUp className="rotate-180 h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Datos obtenidos en los últimos 6 meses
+        <div
+          className="font-medium leading-none"
+          dangerouslySetInnerHTML={{ __html: trendInfo.topLine }}
+        />
+        {/* {trendInfo.isPositive !== null && (
+          <TrendingUp
+            className={`h-4 w-4 ${
+              !trendInfo.isPositive
+                ? 'rotate-180 text-red-600'
+                : 'text-green-600'
+            }`}
+          />
+        )} */}
+
+        <div className="leading-none text-muted-foreground text-sm">
+          {trendInfo.bottomLine}
         </div>
       </CardFooter>
     </Card>
   );
 }
 
-/* ------------------------------------------------------------------
-   Example: ConsumptionChart
-   Remove the h-[600px], etc. in favor of "flex flex-col h-full"
-------------------------------------------------------------------- */
-
-function ConsumptionChart({ data, showCoverCharges, setShowCoverCharges }) {
-  // If you want to show all items (no `slice`), remove or adjust this as needed:
-  const chartData = data; // or data.slice(0, 50) if you have a huge list
-
-  // For a vertical bar chart, each bar might take ~40 pixels in height
-  // You can adjust 40 up/down based on your label size, etc.
-  const chartHeight = chartData.length * 40;
+function AgeDistributionChart({ data }) {
+  const chartData = Object.entries(data).map(([range, value]) => ({
+    name: range,
+    value,
+    fill: 'hsl(var(--chart-1))',
+  }));
 
   const chartConfig = {
     value: { label: 'Cantidad' },
   };
 
   return (
-    // Let the card grow and shrink in the parent; no fixed height
+    <Card className="flex flex-col h-full">
+      <CardHeader>
+        <CardTitle>Distribución por Edad</CardTitle>
+        <CardDescription>Rangos de edad de clientes</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-1 flex items-center justify-center">
+        <ChartContainer config={chartConfig} className="h-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ left: 0, right: 30 }}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <XAxis dataKey="name" className="text-sm" />
+              <YAxis className="text-sm" />
+              <Bar
+                dataKey="value"
+                fill="hsl(var(--chart-1))"
+                radius={[4, 4, 0, 0]}
+              />
+              <ChartTooltip />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ConsumptionChart({ data, showCoverCharges, setShowCoverCharges }) {
+  const chartConfig = {
+    value: { label: 'Cantidad' },
+  };
+
+  return (
     <Card className="flex flex-col h-full">
       <CardHeader>
         <div className="flex justify-between items-center">
@@ -305,7 +469,6 @@ function ConsumptionChart({ data, showCoverCharges, setShowCoverCharges }) {
             <CardTitle>Artículos más consumidos</CardTitle>
             <CardDescription>Top productos por cantidad</CardDescription>
           </div>
-
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Cover</span>
             <Switch
@@ -313,9 +476,7 @@ function ConsumptionChart({ data, showCoverCharges, setShowCoverCharges }) {
               onChange={setShowCoverCharges}
               className={`${
                 showCoverCharges ? 'bg-primary' : 'bg-gray-200'
-              } relative inline-flex h-7 w-12 items-center 
-                rounded-full transition-colors focus:outline-none 
-                focus:ring-2 focus:ring-primary focus:ring-offset-2`}
+              } relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
             >
               <span
                 className={`${
@@ -326,24 +487,12 @@ function ConsumptionChart({ data, showCoverCharges, setShowCoverCharges }) {
           </div>
         </div>
       </CardHeader>
-
-      {/* 
-        CardContent is scrollable (overflow-auto).
-        We'll dynamically size the chart so it can exceed the parent’s height 
-        => user can scroll within this card.
-      */}
       <CardContent className="flex-1 overflow-auto">
         <ChartContainer config={chartConfig} className="w-full">
-          {/* 
-            A wrapper <div> that sets the total height of the chart 
-            based on how many items we have. 
-            If chartHeight is larger than the parent’s available space,
-            the parent’s `overflow-auto` will kick in for scrolling.
-          */}
-          <div style={{ height: chartHeight, minWidth: 300 /* optional */ }}>
+          <div style={{ height: `${data.length * 40}px`, minWidth: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
-                data={chartData}
+                data={data}
                 layout="vertical"
                 margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
               >
@@ -358,12 +507,11 @@ function ConsumptionChart({ data, showCoverCharges, setShowCoverCharges }) {
                   type="category"
                   dataKey="name"
                   width={110}
-                  tick={<TruncateYAxisTick />} // keep your custom tick
+                  tick={<TruncateYAxisTick />}
                 />
-                {/* Custom tooltip that shows the full item name and quantity */}
                 <Tooltip
-                  cursor={false} // or { fill: 'transparent' } if you prefer a transparent cursor
-                  wrapperStyle={{ pointerEvents: 'none' }} // prevents the tooltip from pushing the bars
+                  cursor={false}
+                  wrapperStyle={{ pointerEvents: 'none' }}
                   content={({ active, payload }) => {
                     if (!active || !payload || !payload.length) return null;
                     const { fullName, value } = payload[0].payload;
@@ -382,20 +530,13 @@ function ConsumptionChart({ data, showCoverCharges, setShowCoverCharges }) {
                     fill="hsl(var(--foreground))"
                     style={{ fontSize: '0.75rem', fontWeight: 'bold' }}
                   />
-                  {chartData.map((entry, index) => (
+                  {data.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={`hsl(var(--chart-${(index % 4) + 1}))`}
                     />
                   ))}
                 </Bar>
-
-                {/*
-                  If you want a custom tooltip again, just re-enable it:
-                  <ChartTooltip
-                    content={({ payload }) => { ... }}
-                  />
-                */}
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -405,10 +546,6 @@ function ConsumptionChart({ data, showCoverCharges, setShowCoverCharges }) {
   );
 }
 
-/* ------------------------------------------------------------------
-   Example: RevenueMetricsCard
-   Again, remove fixed heights in favor of "h-full".
-------------------------------------------------------------------- */
 function RevenueMetricsCard({ reportData }) {
   return (
     <Card className="flex flex-col h-full">
@@ -435,18 +572,6 @@ function RevenueMetricsCard({ reportData }) {
     </Card>
   );
 }
-
-/* ------------------------------------------------------------------
-   The main ReportsDashboard component:
-   - Make it fill the parent’s height
-   - Put date picker in a small top area
-   - Then the grid in flex-1 (scroll if needed)
-------------------------------------------------------------------- */
-
-const isCoverCharge = (itemName) => {
-  const coverChargeKeywords = ['AP. MUSICAL', 'COVER'];
-  return coverChargeKeywords.some((keyword) => itemName.includes(keyword));
-};
 
 export default function ReportsDashboard() {
   const [state, setState] = useState([
@@ -478,12 +603,37 @@ export default function ReportsDashboard() {
 
   async function fetchReportData(startDate, endDate) {
     try {
+      // Calculate the previous period
+      const periodLength = endDate - startDate;
+      const previousStartDate = new Date(startDate - periodLength);
+      const previousEndDate = new Date(startDate);
+
+      // Format all dates
       const formattedStartDate = format(startDate, 'dd-MM-yyyy');
       const formattedEndDate = format(endDate, 'dd-MM-yyyy');
-      const url = `${process.env.NEXT_PUBLIC_AWS_URL}noche/report?start_date=${formattedStartDate}&end_date=${formattedEndDate}`;
-      const response = await fetch(url);
-      const data = await response.json();
-      setReportData(data.data);
+      const formattedPreviousStartDate = format(
+        previousStartDate,
+        'dd-MM-yyyy'
+      );
+      const formattedPreviousEndDate = format(previousEndDate, 'dd-MM-yyyy');
+
+      // Fetch both current and previous period data
+      const [currentResponse, previousResponse] = await Promise.all([
+        fetch(
+          `${process.env.NEXT_PUBLIC_AWS_URL}noche/report?start_date=${formattedStartDate}&end_date=${formattedEndDate}`
+        ),
+        fetch(
+          `${process.env.NEXT_PUBLIC_AWS_URL}noche/report?start_date=${formattedPreviousStartDate}&end_date=${formattedPreviousEndDate}`
+        ),
+      ]);
+
+      const currentData = await currentResponse.json();
+      const previousData = await previousResponse.json();
+
+      setReportData({
+        ...currentData.data,
+        previousPeriod: previousData.data,
+      });
     } catch (error) {
       console.error('Error fetching report data:', error);
     }
@@ -494,9 +644,11 @@ export default function ReportsDashboard() {
     const formatStr = "EEEE d 'de' MMMM yyyy";
     const start = format(startDate, formatStr, { locale: es });
     const formattedStart = start.charAt(0).toUpperCase() + start.slice(1);
+
     if (format(startDate, 'yyyy-MM-dd') === format(endDate, 'yyyy-MM-dd')) {
       return formattedStart;
     }
+
     const end = format(endDate, formatStr, { locale: es });
     const formattedEnd = end.charAt(0).toUpperCase() + end.slice(1);
     return `${formattedStart} - ${formattedEnd}`;
@@ -516,12 +668,11 @@ export default function ReportsDashboard() {
       isCoverCharge: isCoverCharge(item),
     }))
     .sort((a, b) => b.value - a.value)
-    .slice(0, 15); // MAS ITEMS SUBE SLICE
+    .slice(0, 15);
 
   return (
-    // 1) Full height, column layout
     <div className="flex flex-col h-[93%]">
-      {/* Date Picker Section (flex-none) */}
+      {/* Date Picker Section */}
       <div className="flex-none p-4">
         <div className="mb-4 relative">
           <div className="flex items-center gap-4">
@@ -535,7 +686,6 @@ export default function ReportsDashboard() {
               {formatDisplayDate()}
             </span>
           </div>
-
           {isVisible && (
             <>
               <div className="fixed inset-0 bg-black/50 z-40" />
@@ -559,23 +709,15 @@ export default function ReportsDashboard() {
         </div>
       </div>
 
-      {/* 2) The grid area (flex-1), scroll if needed */}
+      {/* Charts Grid */}
       <div className="flex-1 overflow-auto px-4 pb-4">
-        {/* 
-          Define a 2-row grid in MD: 
-          row 1 height: 1fr, row 2 height: 1fr (or auto if you prefer).
-          The consumption chart spans 2 rows. 
-        */}
         <div className="h-full grid grid-cols-1 gap-4 md:grid-cols-12 md:grid-rows-2">
-          {/* Row 1 */}
           <div className="col-span-1 md:col-span-3 md:row-span-1 h-full">
             <RevenueMetricsCard reportData={reportData} />
           </div>
           <div className="col-span-1 md:col-span-3 md:row-span-1 h-full">
             <AgeDistributionChart data={reportData.Edad} />
           </div>
-
-          {/* The big chart that spans 2 rows */}
           <div className="col-span-1 md:col-span-6 md:row-span-2 h-full">
             <ConsumptionChart
               data={consumptionData}
@@ -583,13 +725,25 @@ export default function ReportsDashboard() {
               setShowCoverCharges={setShowCoverCharges}
             />
           </div>
-
-          {/* Row 2 */}
           <div className="col-span-1 md:col-span-3 h-full">
-            <GenderDistributionChart data={reportData.GeneroEstimado} />
+            <GenderDistributionChart
+              data={{
+                ...reportData.GeneroEstimado,
+                previousPeriod: reportData.previousPeriod?.GeneroEstimado,
+              }}
+              startDate={state[0].startDate}
+              endDate={state[0].endDate}
+            />
           </div>
           <div className="col-span-1 md:col-span-3 h-full">
-            <CivilStatusChart data={reportData.EstadoCivil} />
+            <CivilStatusChart
+              data={{
+                ...reportData.EstadoCivil,
+                previousPeriod: reportData.previousPeriod?.EstadoCivil,
+              }}
+              startDate={state[0].startDate}
+              endDate={state[0].endDate}
+            />
           </div>
         </div>
       </div>
@@ -597,17 +751,16 @@ export default function ReportsDashboard() {
   );
 }
 
-/* ------------------------------------------------------------------
-   getLatestAvailableDate helper
-------------------------------------------------------------------- */
 function getLatestAvailableDate() {
   const now = new Date();
   let latestDate;
+
   if (now.getHours() < 12) {
     latestDate = subDays(now, 2);
   } else {
     latestDate = subDays(now, 1);
   }
+
   while (
     !isThursday(latestDate) &&
     !isFriday(latestDate) &&
@@ -615,5 +768,11 @@ function getLatestAvailableDate() {
   ) {
     latestDate = subDays(latestDate, 1);
   }
+
   return latestDate;
+}
+
+function isCoverCharge(itemName) {
+  const coverChargeKeywords = ['AP. MUSICAL', 'COVER'];
+  return coverChargeKeywords.some((keyword) => itemName.includes(keyword));
 }
