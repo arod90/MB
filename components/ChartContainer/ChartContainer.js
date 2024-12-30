@@ -19,6 +19,7 @@ import {
 } from 'recharts';
 import MixConsumoPieChart from '../../components/MixConsumoPieChart/MixConsumoPieChart';
 import AgePieChart from '../../components/AgePieChart/AgePieChart';
+import ProductsChart from '@/components/ProductsChart/ProductsChart';
 
 const MetricCard = ({ title, children, className = '' }) => (
   <div
@@ -278,6 +279,10 @@ const DashboardLayout = () => {
           const cantidad = parseInt(detalle.Cantidad);
           if (isNaN(cantidad)) return;
 
+          // Track product sales (including cover charges)
+          metrics.productSales[producto] =
+            (metrics.productSales[producto] || 0) + cantidad;
+
           // Skip excluded products
           if (
             EXCLUDED_KEYWORDS.some((keyword) =>
@@ -462,7 +467,7 @@ const DashboardLayout = () => {
 
       {/* Products Chart */}
       <div className="md:col-span-2 xl:col-span-6 h-[400px] lg:h-[600px]">
-        <MetricCard title="Productos más Vendidos" className="h-full">
+        {/* <MetricCard title="Productos más Vendidos" className="h-full">
           <div style={{ width: '100%', height: '100%' }}>
             <ResponsiveContainer>
               <BarChart
@@ -509,7 +514,8 @@ const DashboardLayout = () => {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </MetricCard>
+        </MetricCard> */}
+        <ProductsChart productSales={metrics.productSales} />
       </div>
       {/* Top Spenders */}
       <div className="md:col-span-2 xl:col-span-6 h-[400px] lg:h-[600px]">
