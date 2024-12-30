@@ -76,12 +76,12 @@ const CustomerList = ({ title, count, customers }) => (
 const DashboardLayout = () => {
   const { clients } = useClientContext();
   const COLORS = [
-    '#0088FE',
-    '#00C49F',
-    '#FFBB28',
-    '#FF8042',
-    '#9C27B0',
-    '#FF5722',
+    '#0088FE', // Bright Blue
+    '#00C49F', // Teal
+    '#3F6B8E', // Steel Blue
+    '#70A9FF', // Light Blue
+    '#1E88E5', // Material Blue
+    '#4DB6AC', // Light Teal w
   ];
 
   const calculateMetrics = () => {
