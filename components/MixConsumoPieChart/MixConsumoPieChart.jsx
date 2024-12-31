@@ -54,11 +54,8 @@ const MixConsumoPieChart = ({ metrics }) => {
       </CardHeader>
 
       <CardContent className="flex flex-col items-center pb-4">
-        <ChartContainer
-          config={{}}
-          className="mx-auto aspect-square max-h-[300px] [&_.recharts-text]:fill-background"
-        >
-          <ResponsiveContainer>
+        <ChartContainer config={{}} className="w-full h-full">
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Tooltip
                 content={<ChartTooltipContent />}
@@ -82,7 +79,7 @@ const MixConsumoPieChart = ({ metrics }) => {
                 <LabelList
                   dataKey="revenue"
                   position="inside"
-                  className="fill-black"
+                  className="fill-white"
                   stroke="none"
                   fontSize={14}
                   formatter={(value) =>
