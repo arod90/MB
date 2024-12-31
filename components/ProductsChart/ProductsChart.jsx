@@ -80,7 +80,7 @@ const ProductsChart = ({ productSales }) => {
   }, [productSales, showCoverCharges]);
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col h-[600px] sm:h-full ">
       <CardHeader>
         <div className="flex justify-between items-center">
           <div>

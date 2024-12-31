@@ -456,65 +456,17 @@ const DashboardLayout = () => {
       </div>
 
       {/* Age Demographics */}
-      <div className="md:col-span-1 xl:col-span-3 h-[400px] lg:h-[450px]">
+      <div className="md:col-span-1 xl:col-span-3 h-[450px] lg:h-[450px]">
         <AgePieChart />
       </div>
 
       {/* Product Mix */}
-      <div className="md:col-span-1 xl:col-span-4 h-[400px] lg:h-[450px]">
+      <div className="md:col-span-1 xl:col-span-4 h-[450px] lg:h-[450px]">
         <MixConsumoPieChart metrics={metrics} />
       </div>
 
       {/* Products Chart */}
-      <div className="md:col-span-2 xl:col-span-6 h-[400px] lg:h-[600px]">
-        {/* <MetricCard title="Productos más Vendidos" className="h-full">
-          <div style={{ width: '100%', height: '100%' }}>
-            <ResponsiveContainer>
-              <BarChart
-                data={Object.entries(metrics.productSales)
-                  .sort(([, a], [, b]) => b - a)
-                  .slice(0, 20)
-                  .map(([name, value]) => ({
-                    name:
-                      name.length > 25 ? name.substring(0, 25) + '...' : name,
-                    value,
-                  }))}
-                layout="vertical"
-                margin={{ top: 5, right: 45, left: 5, bottom: 5 }}
-              >
-                <XAxis type="number" fontSize={11} />
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  width={110}
-                  interval={0}
-                  fontSize={9}
-                  tickLine={false}
-                />
-                <Tooltip
-                  contentStyle={{ fontSize: '12px' }}
-                  labelStyle={{ fontSize: '11px' }}
-                />
-                <Bar
-                  dataKey="value"
-                  fill="#8884d8"
-                  label={(props) => (
-                    <text
-                      x={props.x + props.width + 5}
-                      y={props.y + props.height / 2}
-                      fill="#666"
-                      fontSize={11}
-                      textAnchor="start"
-                      dy={4}
-                    >
-                      {props.value}
-                    </text>
-                  )}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </MetricCard> */}
+      <div className="md:col-span-2 xl:col-span-6 lg:h-[600px]">
         <ProductsChart productSales={metrics.productSales} />
       </div>
       {/* Top Spenders */}

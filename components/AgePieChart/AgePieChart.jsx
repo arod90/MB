@@ -72,7 +72,7 @@ const AgePieChart = () => {
 
   // 4) Render the Card with the donut PieChart
   return (
-    <Card className="flex flex-col items-center justify-center w-full h-[400px] lg:h-[450px]">
+    <Card className="flex flex-col items-center justify-center w-full h-[450px] lg:h-[450px]">
       <CardHeader className="items-center pb-0">
         <CardTitle>Edad de los Clientes</CardTitle>
         <CardDescription>Distribución por Rango de Edad</CardDescription>

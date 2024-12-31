@@ -7,7 +7,8 @@ import {
   Cell,
   ResponsiveContainer,
   Tooltip,
-  Label,
+  LabelList,
+  Legend,
 } from 'recharts';
 import {
   Card,
@@ -20,10 +21,6 @@ import {
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 
 const COLORS = [
-  // '#FF6384', // Red
-  // '#36A2EB', // Blue
-  // '#FFCE56', // Yellow
-  // '#4BC0C0', // Teal
   '#9966FF', // Purple
   '#FF9F40', // Orange
 ];
@@ -36,6 +33,7 @@ const MixConsumoPieChart = ({ metrics }) => {
     ([category, { revenue }]) => ({
       category: category === 'bebidas' ? 'Bebidas' : 'Alimentos',
       revenue,
+      fill: COLORS[category === 'bebidas' ? 0 : 1],
     })
   );
 
@@ -47,29 +45,30 @@ const MixConsumoPieChart = ({ metrics }) => {
   const topBebida = metrics.topBebida.name;
 
   return (
-    <Card className="flex flex-col items-center text-center justify-center w-full h-full">
-      <CardHeader className="items-center pb-0">
+    <Card className="flex flex-col items-center justify-between h-full">
+      <CardHeader className="items-center pb-4">
         <CardTitle>Mix de Consumo</CardTitle>
         <CardDescription>
-          Proporción de alimentos y bebidas que suelen ordenar los clientes de
-          hoy
+          Proporción de consumo de alimentos y bebidas
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer config={{}} className="mx-auto w-full h-full">
+      <CardContent className="flex flex-col items-center pb-4">
+        <ChartContainer
+          config={{}}
+          className="mx-auto aspect-square max-h-[300px] [&_.recharts-text]:fill-background"
+        >
           <ResponsiveContainer>
             <PieChart>
               <Tooltip
                 content={<ChartTooltipContent />}
                 formatter={(value, name) => [
-                  `${((value / totalRevenue) * 100).toFixed(
-                    1
-                  )}% (${new Intl.NumberFormat('es-EC', {
+                  name,
+                  `
+                  (${new Intl.NumberFormat('es-EC', {
                     style: 'currency',
                     currency: 'USD',
                   }).format(value)})`,
-                  name,
                 ]}
               />
               <Pie
@@ -77,48 +76,36 @@ const MixConsumoPieChart = ({ metrics }) => {
                 dataKey="revenue"
                 nameKey="category"
                 innerRadius={50}
-                outerRadius={100}
+                outerRadius={120}
                 paddingAngle={5}
-                label={({ percent, value }) =>
-                  `${(percent * 100).toFixed(1)}% (${new Intl.NumberFormat(
-                    'es-EC',
-                    { style: 'currency', currency: 'USD' }
-                  ).format(value)})`
-                }
               >
-                {chartData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-
-                {/* Center Label */}
-                <Label
-                  position="center"
-                  content={({ viewBox }) => {
-                    if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
-                      return (
-                        <text
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          className="fill-foreground text-xl font-semibold"
-                        >
-                          Mix
-                        </text>
-                      );
-                    }
-                  }}
+                <LabelList
+                  dataKey="revenue"
+                  position="inside"
+                  className="fill-black"
+                  stroke="none"
+                  fontSize={14}
+                  formatter={(value) =>
+                    `${((value / totalRevenue) * 100).toFixed(1)}%`
+                  }
                 />
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
               </Pie>
+              {/* <Legend
+                align="center"
+                verticalAlign="bottom"
+                iconType="circle"
+                layout="horizontal"
+                wrapperStyle={{ marginTop: '10px' }}
+              /> */}
             </PieChart>
           </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-2 text-sm">
+      <CardFooter className="flex flex-col items-center gap-2 text-sm">
         <div className="leading-none text-muted-foreground">
           <strong>Top Alimento:</strong> {topAlimento}
         </div>
