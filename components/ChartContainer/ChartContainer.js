@@ -149,7 +149,7 @@ const DashboardLayout = () => {
     'MANHATTAN',
     'OLD FASHIONED',
     'PORNSTAR',
-    'BOURBON',
+    // 'BOURBON',
     'COSMOPOLITAN',
     'ESPRESSO',
   ];
