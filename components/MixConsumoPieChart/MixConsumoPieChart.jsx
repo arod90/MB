@@ -45,7 +45,7 @@ const MixConsumoPieChart = ({ metrics }) => {
   const topBebida = metrics.topBebida.name;
 
   return (
-    <Card className="flex flex-col items-center justify-between h-full">
+    <Card className="flex flex-col items-center justify-center w-full h-[450px] lg:h-[450px]">
       <CardHeader className="items-center pb-4">
         <CardTitle>Mix de Consumo</CardTitle>
         <CardDescription>
@@ -53,52 +53,50 @@ const MixConsumoPieChart = ({ metrics }) => {
         </CardDescription>
       </CardHeader>
 
-      <CardContent>
-        <ChartContainer config={{}} className="w-full h-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Tooltip
-                content={<ChartTooltipContent />}
-                formatter={(value, name) => [
-                  name,
-                  `
+      <CardContent className="flex-1 pb-0">
+        <ChartContainer config={{}} className="mx-auto aspect-square h-full">
+          <PieChart>
+            <Tooltip
+              content={<ChartTooltipContent />}
+              formatter={(value, name) => [
+                name,
+                `
                   (${new Intl.NumberFormat('es-EC', {
                     style: 'currency',
                     currency: 'USD',
                   }).format(value)})`,
-                ]}
-              />
-              <Pie
-                data={chartData}
+              ]}
+            />
+            <Pie
+              data={chartData}
+              dataKey="revenue"
+              nameKey="category"
+              innerRadius={50}
+              outerRadius={120}
+              paddingAngle={5}
+            >
+              <LabelList
                 dataKey="revenue"
-                nameKey="category"
-                innerRadius={50}
-                outerRadius={120}
-                paddingAngle={5}
-              >
-                <LabelList
-                  dataKey="revenue"
-                  position="inside"
-                  className="fill-white"
-                  stroke="none"
-                  fontSize={14}
-                  formatter={(value) =>
-                    `${((value / totalRevenue) * 100).toFixed(1)}%`
-                  }
-                />
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.fill} />
-                ))}
-              </Pie>
-              {/* <Legend
+                position="inside"
+                className="fill-white"
+                stroke="none"
+                fontSize={14}
+                formatter={(value) =>
+                  `${((value / totalRevenue) * 100).toFixed(1)}%`
+                }
+              />
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.fill} />
+              ))}
+            </Pie>
+            {/* <Legend
                 align="center"
                 verticalAlign="bottom"
                 iconType="circle"
                 layout="horizontal"
                 wrapperStyle={{ marginTop: '10px' }}
               /> */}
-            </PieChart>
-          </ResponsiveContainer>
+          </PieChart>
         </ChartContainer>
       </CardContent>
 
