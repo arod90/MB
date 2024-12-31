@@ -45,7 +45,7 @@ const MixConsumoPieChart = ({ metrics }) => {
   const topBebida = metrics.topBebida.name;
 
   return (
-    <Card className="flex flex-col h-full">
+    <Card className="flex flex-col items-center justify-between h-full">
       <CardHeader className="items-center pb-4">
         <CardTitle>Mix de Consumo</CardTitle>
         <CardDescription>
@@ -53,7 +53,7 @@ const MixConsumoPieChart = ({ metrics }) => {
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="flex flex-col items-center pb-4">
+      <CardContent>
         <ChartContainer config={{}} className="w-full h-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
